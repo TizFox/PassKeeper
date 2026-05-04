@@ -1,0 +1,119 @@
+:root {
+  --bodyBgColor: #F6DCAC;
+  --mainBgColor: #028391;
+  --mainColor: #01204E;
+  --secondBgColor: #FEAE6F;
+  --debug: none;    /* if wanted set it to 'block' */
+}
+
+body {
+  text-align: center;
+  background-color: var(--bodyBgColor);
+  font-family: 'Fira Code';
+  color: var(--mainColor);
+}
+
+h1, h2, h3 {
+  font-family: 'Kode Mono';
+  font-size: 3rem;
+  font-weight: bold;
+}
+h2 {
+  font-size: 2.5rem;
+}
+h3 {
+  font-size: 2rem;
+}
+
+/* General */
+.debug {
+  display: var(--debug);
+}
+
+.main {
+  background-color: var(--mainBgColor);
+  color: var(--mainColor);
+}
+
+.container-fluid {
+  padding: 0 2%;
+}
+
+.spacer {
+  height: 2rem;
+}
+
+.card {
+  margin: 0.5rem;
+  border: 0;
+}
+
+.card-header, .card-footer {
+  font-size: 1.5rem;
+  line-height: 3rem;
+  border: 0;
+}
+
+.card-body {
+  font-size: 0.95rem;
+  border-right: var(--bodyBgColor) solid 5px;
+  border-left: var(--bodyBgColor) solid 5px;
+  background-color: var(--secondBgColor);
+}
+
+#logo {
+  width: 40VW;  /*40% of Viewport Width*/
+}
+
+/* Lists */
+.list {
+  width: 100%;
+  margin: 5% auto;
+}
+
+.list-group, .list-group-item {
+  height: 4rem;
+}
+
+.listItem {
+  width: 33%;
+  height: 100%;
+  padding: 1rem;
+}
+
+/* Form */
+#formTable {
+  margin: 0.5rem auto;
+}
+
+.input-group-text {
+  width: 7rem;
+}
+
+#other, #newOther {
+  height: 6rem;
+}
+
+#modTableDiv {
+  display: none;
+}
+
+/* Alerts */
+.alert {
+  text-align: left;
+  z-index: 5;
+}
+
+#alertTable {
+  position: fixed;
+  left: 1VW;
+  bottom: 1VW;
+  width: 40VW;
+  z-index: 5;
+}
+
+#successAlert, #warningAlert, #dangerAlert {
+  display: none;
+  width: 100%;
+  z-index: 5;
+}
