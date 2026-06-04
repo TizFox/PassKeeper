@@ -1,0 +1,38 @@
+
+<app-popup>
+	<h1 class="font-semibold text-cta">New Account</h1>
+	<form
+		[formGroup]="newAccountForm"
+		class="flex flex-col gap-3"
+	>
+		<app-text-input placeholder="Username / Email" formControlName="username" />
+
+		<div class="flex">
+			<app-text-input placeholder="Password" formControlName="password" />
+			<app-button (onClick)="generatePassword()">Generate</app-button>
+		</div>
+	</form>
+</app-popup>
+
+@if (ready()) {
+	@if (accounts().length > 0) {
+		<section class="flex flex-col gap-5">
+
+			<div>
+				<h1>AAA</h1>
+			</div>
+
+			@for (acc of accounts(); track acc) {
+
+			}
+		</section>
+	} @else {
+		<app-empty msg="No Accounts">
+			<app-button>
+				Create new Account
+			</app-button>
+		</app-empty>
+	}
+} @else {
+	<app-loading msg="Finding your Accounts..." />
+}

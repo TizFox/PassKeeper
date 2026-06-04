@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+@theme {
+	--bar-size: 10vh;
+	--main-size: 80vh;
+
+	--avatar-size: 7vh;
+
+	--color-std: var(--color-gray-950);
+	--color-inv: var(--color-gray-50);
+	--color-pla: var(--color-gray-500);
+	--color-cta: var(--color-teal-500);
+	--color-err: var(--color-rose-500);
+
+	--color-z0: var(--color-gray-100);
+	--color-z1: var(--color-gray-200);
+	--color-z2: var(--color-gray-300);
+}
+
+@utility color-transition {
+	@apply transition-colors duration-200 ease-in-out;
+}
+@utility move-transition {
+	@apply transition-transform duration-350 ease-in-out;
+}
+@utility base-shadow {
+	@apply shadow-xl;
+}
+
+@layer base {
+	body {
+		@apply overflow-x-hidden bg-z0 text-std;
+	}
+
+	h1 {
+		@apply font-extralight text-3xl;
+	}
+	h2 {
+		@apply font-light text-xl;
+	}
+
+	input,
+	button {
+		@apply outline-none focus:ring-0;
+	}
+}
+
+@layer components {
+	.bars-container {
+		@apply w-screen h-(--bar-size) bg-z2
+		flex justify-center base-shadow;
+
+		.header {
+			@apply w-full max-w-7xl h-full p-5
+			flex justify-start items-center gap-5;
+		}
+		.footer {
+			@apply w-full max-w-7xl h-full p-5
+			flex justify-center items-center gap-3;
+		}
+	}
+
+	.main-container {
+		@apply w-screen h-(--main-size)
+		flex justify-center;
+
+		.main {
+			@apply w-full max-w-7xl h-full px-5
+			flex flex-col justify-center items-center;
+		}
+	}
+
+	.link {
+		@apply text-pla cursor-pointer
+		hover:underline;
+	}
+}

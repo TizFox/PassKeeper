@@ -1,0 +1,14 @@
+<button
+	[type]="type()"
+	(click)="handleClick($event)"
+	[routerLink]="href()"
+	[disabled]="disabled()"
+	[class]="class() + ' px-3 py-1
+	rounded-xs cursor-pointer
+	border-2 border-pla text-pla
+	color-transition
+	hover:bg-cta hover:border-cta hover:text-inv
+	disabled:bg-transparent disabled:border-err disabled:text-std disabled:cursor-not-allowed'"
+>
+	<ng-content />
+</button>

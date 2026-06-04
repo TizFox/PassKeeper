@@ -1,0 +1,17 @@
+<a
+	routerLink=""
+	class="h-min flex flex-col justify-center items-start text-cta select-none">
+
+	<div class="flex flex-row items-end">
+		<h1 class="font-semibold">P</h1>
+		<svg lucideLock class="h-full pb-1.5" strokeWidth="3"></svg>
+		<h1 class="font-semibold">ss</h1>
+
+		@if (extended()) {
+			<h1 class="font-semibold">Keeper</h1>
+		}
+	</div>
+	@if (!extended()) {
+		<h1 class="font-semibold">Keeper</h1>
+	}
+</a>

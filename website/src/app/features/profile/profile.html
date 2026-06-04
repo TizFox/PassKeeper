@@ -1,0 +1,37 @@
+@if (ready()) {
+	<app-container class="gap-5">
+		<div class="w-full flex gap-3">
+			<app-avatar />
+			<div class="flex flex-col">
+				<h2 class="font-semibold text-cta">{{ profile().username }}</h2>
+				<span>{{ profile().email }} </span>
+				{{ profile().createtAt }}
+			</div>
+		</div>
+
+		<form
+			[formGroup]="profileForm"
+			(ngSubmit)="handler($event, 'update')"
+			class="w-full flex flex-col gap-3"
+		>
+			<app-text-input placeholder="New Username" formControlName="newUsername" />
+			<app-text-input type="password" placeholder="New Password" formControlName="newPassword" />
+
+			<app-button type="submit" class="w-full">
+				{{loading() ? 'Loading...' : 'UPDATE'}}
+			</app-button>
+
+			<div class="w-full flex gap-3">
+				<app-button	(onClick)="handler($event, 'logout')" class="w-full">
+					{{loading() ? 'Loading...' : 'LOGOUT'}}
+				</app-button>
+
+				<app-button (onClick)="handler($event, 'delete')" class="w-full">
+					{{loading() ? 'Loading...' : 'DELETE'}}
+				</app-button>
+			</div>
+		</form>
+	</app-container>
+}  @else {
+	<app-loading msg="Loading..." />
+}
