@@ -9,14 +9,17 @@
 			<svg lucideX class="w-6 h-6" strokeWidth="3"></svg>
 		</app-button>
 	</div>
+
 	<form
 		[formGroup]="newAccountForm"
+		(ngSubmit)="createNewAccount($event)"
 		class="flex flex-col gap-3"
 	>
-		<app-text-input placeholder="Username / Email" formControlName="username" />
+		<app-text-input placeholder="Account Name" formControlName="name" required />
+		<app-text-input placeholder="Username / Email" formControlName="username" required />
 
 		<div class="flex gap-2">
-			<app-text-input type="password" placeholder="Password" notObscured formControlName="password" />
+			<app-text-input type="password" placeholder="Password" notObscured formControlName="password" required />
 			<app-button
 				(onClick)="generatePassword()"
 				p="px-3"
@@ -29,7 +32,7 @@
 
 		<div class="flex justify-end">
 			<app-button type="submit">
-				CONFIRM
+				{{ loading() ? "Loading..." : "Confirm" }}
 			</app-button>
 		</div>
 	</form>
@@ -40,12 +43,15 @@
 	@if (accounts().length > 0) {
 		<section class="flex flex-col gap-5">
 
-			<div>
+			<div class="flex justify-between">
 				<h1>Accounts</h1>
+				<app-button (onClick)="openNewAccount()" p="p-1">
+					<svg lucidePlus class="w-6 h-6" strokeWidth="3"></svg>
+				</app-button>
 			</div>
 
-			@for (acc of accounts(); track acc) {
-
+			@for (acc of accounts(); track acc.name) {
+				<app-vault-account [item]="acc"/>
 			}
 		</section>
 	} @else {

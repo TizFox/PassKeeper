@@ -1,0 +1,10 @@
+<app-container class="flex-row justify-center items-center gap-3">
+	<h1 class="font-semibold text-cta">{{ item().name }}</h1>
+	<span>{{ item().username }}</span>
+	<span
+		class="p-1 rounded-full border-2"
+		[style.borderColor]="item().category.color"
+	>
+		{{ item().category.text }}
+	</span>
+</app-container>
