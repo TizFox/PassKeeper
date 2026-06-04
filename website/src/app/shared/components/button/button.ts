@@ -11,6 +11,7 @@ export class Button {
 	type = input('button');
 	onClick = output<Event>();
 	class = input('');
+	p = input('px-3 py-1');
 	disabled = input(false);
 	href = input<string | null>(null);
 

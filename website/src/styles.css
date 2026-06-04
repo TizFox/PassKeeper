@@ -27,19 +27,34 @@
 	@apply shadow-xl;
 }
 
+@utility title-text {
+	@apply text-2xl md:text-3xl;
+}
+@utility subtitle-text {
+	@apply text-xl md:text-2xl;
+}
+@utility base-text {
+	@apply text-base md:text-lg;
+}
+@utility small-text {
+	@apply text-sm md:text-base;
+}
+
 @layer base {
 	body {
-		@apply overflow-x-hidden bg-z0 text-std;
+		@apply overflow-x-hidden bg-z0
+		base-text text-std;
 	}
 
 	h1 {
-		@apply font-extralight text-3xl;
+		@apply font-extralight title-text;
 	}
 	h2 {
-		@apply font-light text-xl;
+		@apply font-light subtitle-text;
 	}
 
 	input,
+	textarea,
 	button {
 		@apply outline-none focus:ring-0;
 	}

@@ -1,4 +1,12 @@
-import { Component, input, signal, computed, booleanAttribute, forwardRef } from '@angular/core';
+import {
+	Component,
+	forwardRef,
+	input,
+	booleanAttribute,
+	signal,
+	computed,
+	linkedSignal,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import {
@@ -28,11 +36,12 @@ export class TextInput implements ControlValueAccessor {
 	placeholder = input('');
 	required = input(false, { transform: booleanAttribute });
 	invalidIf = input(false);
+	notObscured = input(false, { transform: booleanAttribute });
 
 	protected value = signal('');
 	protected disabled = signal(false);
 
-	protected readonly icon = computed(() => {
+	protected icon = computed(() => {
 		switch (this.type()) {
 			case 'text':
 				return LucideTextCursorInput;
@@ -45,9 +54,9 @@ export class TextInput implements ControlValueAccessor {
 		}
 	});
 
-	protected readonly obscured = signal(true);
-	protected readonly passIcon = computed(() => (this.obscured() ? LucideEye : LucideEyeOff));
-	protected readonly toggleObscured = () => {
+	protected obscured = linkedSignal(() => !this.notObscured);
+	protected passIcon = computed(() => (this.obscured() ? LucideEye : LucideEyeOff));
+	protected toggleObscured = () => {
 		this.obscured.set(!this.obscured());
 	};
 

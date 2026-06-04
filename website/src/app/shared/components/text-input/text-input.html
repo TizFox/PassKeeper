@@ -9,11 +9,11 @@
 		(blur)="onBlur()"
 		[class]="'peer flex-1 pl-7
 		placeholder-pla
-		border-b-2 border-pla
+		border-y-2 border-t-transparent border-b-pla
 		rounded-xs
 		color-transition
-		focus:border-cta
-		user-invalid:border-err ' + (invalidIf() ? 'border-err' : '')"
+		focus:border-b-cta
+		user-invalid:border-b-err ' + (invalidIf() ? 'border-b-err' : '')"
 	/>
 	<div
 		[class]="'absolute left-0 h-full
