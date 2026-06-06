@@ -1,66 +1,74 @@
-@if (viewNewAccount()) {
-<app-popup>
-	<div class="flex justify-between">
-		<h1 class="font-semibold text-cta">New Account</h1>
-		<app-button
-			(onClick)="closeNewAccount()"
-			p="p-1"
-		>
-			<svg lucideX class="w-6 h-6" strokeWidth="3"></svg>
-		</app-button>
-	</div>
-
-	<form
-		[formGroup]="newAccountForm"
-		(ngSubmit)="createNewAccount($event)"
-		class="flex flex-col gap-3"
-	>
-		<app-text-input placeholder="Account Name" formControlName="name" required />
-		<app-text-input placeholder="Username / Email" formControlName="username" required />
-
-		<div class="flex gap-2">
-			<app-text-input type="password" placeholder="Password" notObscured formControlName="password" required />
-			<app-button
-				(onClick)="generatePassword()"
-				p="px-3"
-			>
-				Generate
-			</app-button>
-		</div>
-
-		<app-area-input placeholder="Notes" formControlName="notes"/>
-
-		<div class="flex justify-end">
-			<app-button type="submit">
-				{{ loading() ? "Loading..." : "Confirm" }}
-			</app-button>
-		</div>
-	</form>
-</app-popup>
+@if (showAccountForm()) {
+	<app-vault-form-account
+		[type]="formType"
+		[categories]="categories()"
+		(close)="closeForm()"
+		[account]="selectedAccount()"
+		(createAccount)="createAccount($event)"
+		(updateAccount)="updateAccount($event)"
+		(deleteAccount)="deleteAccount($event)"	/>
+}
+@if (showCategoryForm()) {
+	<app-vault-form-category
+		[typeInput]="formType"
+		[categories]="categories()"
+		(close)="closeForm()"
+		[category]="selectedCategory()"
+		(createCategory)="createCategory($event)"
+		(updateCategory)="updateCategory($event)"
+		(deleteCategory)="deleteCategory($event)" />
 }
 
 @if (ready()) {
-	@if (accounts().length > 0) {
-		<section class="flex flex-col gap-5">
+	<div class="w-full h-full grid grid-cols-7 gap-10">
+		<section class="col-span-5 flex flex-col gap-3">
+			@if (accounts().length > 0) {
+				<div class="pl-1 flex justify-between">
+					<h1 class="pl-2 border-l-3 border-cta base-rounded">Accounts</h1>
+					<app-button (onClick)="newAccountForm()" p="p-1">
+						<svg lucidePlus class="w-6 h-6" strokeWidth="3"></svg>
+					</app-button>
+				</div>
 
-			<div class="flex justify-between">
-				<h1>Accounts</h1>
-				<app-button (onClick)="openNewAccount()" p="p-1">
-					<svg lucidePlus class="w-6 h-6" strokeWidth="3"></svg>
-				</app-button>
-			</div>
-
-			@for (acc of accounts(); track acc.name) {
-				<app-vault-account [item]="acc"/>
+				@for (acc of accounts(); track acc.id) {
+					<app-vault-account
+						[account]="acc"
+						(onClick)="viewAccountForm(acc)"
+					/>
+				}
+			} @else {
+				<app-empty msg="No Accounts">
+					<app-button (onClick)="newAccountForm()">
+						Create new Account
+					</app-button>
+				</app-empty>
 			}
 		</section>
-	} @else {
-		<app-empty msg="No Accounts">
-			<app-button (onClick)="openNewAccount()">
-				Create new Account
-			</app-button>
-		</app-empty>
-	}
+
+		<section class="col-span-2 flex flex-col gap-3">
+			@if (categories().length > 0) {
+				<div class="flex justify-between">
+					<h1 class="pl-2 border-l-3 border-cta base-rounded">Categories</h1>
+					<app-button (onClick)="newCategoryForm()" p="p-1">
+						<svg lucidePlus class="w-6 h-6" strokeWidth="3"></svg>
+					</app-button>
+				</div>
+
+				@for (cat of categories(); track cat.id) {
+					<app-vault-category
+						[category]="cat"
+						(onClick)="viewCategoryForm(cat)"
+					/>
+				}
+			} @else {
+				<app-empty msg="No Categories">
+					<app-button (onClick)="newCategoryForm()">
+						Create new Category
+					</app-button>
+				</app-empty>
+			}
+		</section>
+	</div>
 } @else {
 	<app-loading msg="Finding your Accounts..." />
 }

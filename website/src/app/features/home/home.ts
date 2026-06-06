@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Loading } from '$/shared/components/loading/loading';
+import { Loading } from '$/shared/components/status/loading';
 
 @Component({
 	selector: 'app-home',

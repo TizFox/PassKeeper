@@ -4,9 +4,9 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
 
 import { SupabaseService } from '$/core/supabase.service';
 
-import { Container } from '$/shared/components/container/container';
-import { TextInput } from '$/shared/components/text-input/text-input';
-import { Button } from '$/shared/components/button/button';
+import { Container } from '$/shared/components/base/container';
+import { TextInput } from '$/shared/components/inputs/text-input';
+import { Button } from '$/shared/components/inputs/button';
 
 @Component({
 	selector: 'app-auth',

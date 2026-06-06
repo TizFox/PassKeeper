@@ -1,6 +1,6 @@
 <section class="w-full grid grid-cols-2 auto-row-fr">
 	<!-- LOGIN -->
-	<app-container [class]="translateLogin()">
+	<app-container [extra]="translateLogin()">
 		<form
 			[formGroup]="loginForm"
 			(ngSubmit)="handler($event, 'login')"
@@ -20,7 +20,7 @@
 	</app-container>
 
 	<!-- SIGNUP -->
-	<app-container [class]="translateSignup()">
+	<app-container [extra]="translateSignup()">
 		<form
 			[formGroup]="signupForm"
 			(ngSubmit)="handler($event, 'signup')"

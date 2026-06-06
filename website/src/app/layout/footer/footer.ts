@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Logo } from '$/shared/components/logo/logo';
+import { Logo } from '$/shared/components/base/logo';
 
 @Component({
 	selector: 'app-footer',

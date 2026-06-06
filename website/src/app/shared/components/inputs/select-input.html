@@ -1,0 +1,14 @@
+<div class="flex-1 flex items-center gap-1">
+	<label>{{ label() }}:</label>
+	<select
+		(change)="onSelect($event)"
+		class="w-full p-1
+		border-y-2 border-t-transparent border-b-pla
+		base-rounded
+		color-transition
+		focus:border-b-cta">
+		@for (opt of optionList(); track opt) {
+			<option [value]="opt" [selected]="opt === value()">{{ opt | dashtotitle }}</option>
+		}
+	</select>
+</div>

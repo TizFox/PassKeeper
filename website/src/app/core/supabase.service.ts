@@ -1,5 +1,7 @@
-import { Injectable, inject, PLATFORM_ID, signal, computed } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+
+import { Account, Category } from './types';
 
 import {
 	SupabaseClient,
@@ -7,6 +9,7 @@ import {
 	User,
 	AuthChangeEvent,
 	Session,
+	AuthWeakPasswordError,
 } from '@supabase/supabase-js';
 
 import { env } from 'src/env';
@@ -26,7 +29,6 @@ export class SupabaseService {
 	get user(): User | null {
 		return this._user();
 	}
-
 	constructor() {
 		this.supabase = createClient(env.supabaseUrl, env.supabaseKey);
 
@@ -64,7 +66,6 @@ export class SupabaseService {
 			err: error?.message ?? null,
 		};
 	};
-
 	signup = async (
 		username: string,
 		email: string,
@@ -85,7 +86,6 @@ export class SupabaseService {
 			err: error?.message ?? null,
 		};
 	};
-
 	logout = async (): Promise<{ err: string | null }> => {
 		const { error } = await this.supabase.auth.signOut();
 
@@ -106,5 +106,54 @@ export class SupabaseService {
 		newPassword: string | null;
 	}): Promise<{ err: string | null }> => {
 		return { err: null };
+	};
+
+	getAccounts = async (): Promise<Account[]> => {
+		let { data, error } = await this.supabase.from('accounts').select('*, categories(*)');
+		if (error || !data) {
+			console.log(error);
+			return [];
+		}
+
+		let accounts = data.map((acc) => {
+			return {
+				id: acc.id,
+				name: acc.name,
+				username: acc.username,
+				password: acc.password,
+				notes: acc.notes,
+				category: {
+					id: acc.categories.id,
+					name: acc.categories.name,
+					color: acc.categories.color,
+					icon: acc.categories.icon,
+				} as Category,
+			} as Account;
+		});
+
+		console.log(accounts);
+
+		return accounts;
+	};
+
+	getCategories = async (): Promise<Category[]> => {
+		let { data, error } = await this.supabase.from('categories').select('*');
+		if (error || !data) {
+			console.log(error);
+			return [];
+		}
+
+		let categories = data.map((cat) => {
+			return {
+				id: cat.id,
+				name: cat.name,
+				color: cat.color,
+				icon: cat.icon,
+			} as Category;
+		});
+
+		console.log(categories);
+
+		return categories;
 	};
 }

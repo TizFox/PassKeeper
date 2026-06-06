@@ -27,6 +27,13 @@
 	@apply shadow-xl;
 }
 
+@utility base-rounded {
+	@apply rounded-sm;
+}
+@utility container-rounded {
+	@apply rounded-md;
+}
+
 @utility title-text {
 	@apply text-2xl md:text-3xl;
 }
@@ -53,9 +60,10 @@
 		@apply font-light subtitle-text;
 	}
 
+	button,
 	input,
 	textarea,
-	button {
+	select {
 		@apply outline-none focus:ring-0;
 	}
 }
@@ -67,21 +75,11 @@
 
 		.header {
 			@apply w-full max-w-7xl h-full p-5
-			flex justify-start items-center gap-5;
+			flex items-center gap-5;
 		}
 		.footer {
 			@apply w-full max-w-7xl h-full p-5
 			flex justify-center items-center gap-3;
-		}
-	}
-
-	.main-container {
-		@apply w-screen h-(--main-size)
-		flex justify-center;
-
-		.main {
-			@apply w-full max-w-7xl h-full px-5
-			flex flex-col justify-center items-center;
 		}
 	}
 

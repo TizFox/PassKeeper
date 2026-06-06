@@ -3,9 +3,9 @@ import { validRoutes } from '$/app.routes';
 
 import { SupabaseService } from '$/core/supabase.service';
 
-import { Logo } from '$/shared/components/logo/logo';
-import { Avatar } from '$/shared/components/avatar/avatar';
-import { Button } from '$/shared/components/button/button';
+import { Logo } from '$/shared/components/base/logo';
+import { Avatar } from '$/shared/components/base/avatar';
+import { Button } from '$/shared/components/inputs/button';
 
 @Component({
 	selector: 'app-header',

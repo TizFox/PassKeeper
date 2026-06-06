@@ -1,0 +1,67 @@
+<app-container popup>
+	<div class="flex justify-between gap-5">
+		<h1 class="font-semibold text-cta">
+			{{ type() | dashtotitle }}
+		</h1>
+		<div class="flex gap-1">
+			@if (type() === "view-category") {
+				<app-button
+					(onClick)="modify()"
+					p="p-1"
+				>
+					<svg lucidePencil class="w-6 h-6" strokeWidth="3"></svg>
+				</app-button>
+			}
+
+			@if (type() === "modify-category") {
+				<app-button
+					(onClick)="delete()"
+					p="p-1"
+				>
+					<svg lucideTrash class="w-6 h-6" strokeWidth="3"></svg>
+				</app-button>
+			}
+
+			<app-button
+				(onClick)="close.emit()"
+				p="p-1"
+			>
+				<svg lucideX class="w-6 h-6" strokeWidth="3"></svg>
+			</app-button>
+		</div>
+	</div>
+
+	@if (type() === "new-category" || type() === "modify-category") {
+		<form
+			[formGroup]="categoryForm"
+			(ngSubmit)="formSubmit($event)"
+			class="flex flex-col gap-3"
+		>
+			<app-text-input placeholder="Category Name" formControlName="name" required />
+
+			<app-select-input label="Icon" [optionList]="possibleIcons" formControlName="icon" />
+
+			<div class="flex justify-between items-end">
+				<input
+					type="color"
+					formControlName="color"
+					class="w-2/3"
+				/>
+
+				<app-button type="submit">
+					{{ "Save" }}
+				</app-button>
+			</div>
+		</form>
+	} @else {
+		<div class="grid grid-cols-4 gap-y-2">
+			<span>Name:</span> <app-value>{{ currentCategory().name }}</app-value>
+			<span>Icon:</span> <app-value>{{ currentCategory().icon }}</app-value>
+			<span>Color:</span> <app-value [bgColor]="currentCategory().color">{{ currentCategory().color }}</app-value>
+		</div>
+	}
+	<div>
+		Preview:
+		<app-vault-category [category]="currentCategory()" />
+	</div>
+</app-container>

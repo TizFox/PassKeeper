@@ -1,0 +1,52 @@
+<app-container popup>
+	<div class="flex justify-between">
+		<h1 class="font-semibold text-cta">
+			{{ type() | dashtotitle }}
+		</h1>
+
+		<div class="flex gap-1">
+			@if (type() === "view-account") {
+				<app-button
+					(onClick)="close.emit()"
+					p="p-1"
+				>
+					<svg lucidePencil class="w-6 h-6" strokeWidth="3"></svg>
+				</app-button>
+			}
+			<app-button
+				(onClick)="close.emit()"
+				p="p-1"
+			>
+				<svg lucideX class="w-6 h-6" strokeWidth="3"></svg>
+			</app-button>
+		</div>
+	</div>
+
+	<form
+		[formGroup]="accountForm"
+		(ngSubmit)="formSubmit($event)"
+		class="flex flex-col gap-3"
+	>
+		<app-text-input placeholder="Account Name" formControlName="name" required />
+		<app-text-input placeholder="Username / Email" formControlName="username" required />
+		<div class="flex gap-2">
+			<app-text-input type="password" placeholder="Password" notObscured formControlName="password" required />
+			<app-button
+				(onClick)="generatePassword()"
+				p="px-3"
+			>
+				Generate
+			</app-button>
+		</div>
+		<app-area-input placeholder="Notes" formControlName="notes" />
+		<div class="flex justify-between items-end">
+			<div class="flex items-center gap-1">
+				<app-select-input label="Category" [optionList]="categoriesNames()" formControlName="categoryName" />
+				<app-category-icon [category]="currentAccount().category" simple />
+			</div>
+			<app-button type="submit">
+				{{ "Confirm" }}
+			</app-button>
+		</div>
+	</form>
+</app-container>

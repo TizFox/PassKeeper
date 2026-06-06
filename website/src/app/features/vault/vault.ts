@@ -1,33 +1,29 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+
+import { LucidePlus } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { checkAuth } from '$/core/authCheck';
-import { Account } from '$/core/types';
+import { Account, Category, FormType } from '$/core/types';
 
-import { LucideX, LucidePlus } from '@lucide/angular';
-
-import { Popup } from '$/shared/components/popup/popup';
-import { TextInput } from '$/shared/components/text-input/text-input';
-import { AreaInput } from '$/shared/components/area-input/area-input';
-import { Button } from '$/shared/components/button/button';
-import { VaultAccount } from '$/shared/components/vault-account/vault-account';
-
-import { Empty } from '$/shared/components/empty/empty';
-import { Loading } from '$/shared/components/loading/loading';
+import { VaultFormAccount } from '$/shared/components/vault/vault-form-account';
+import { VaultFormCategory } from '$/shared/components/vault/vault-form-category';
+import { Button } from '$/shared/components/inputs/button';
+import { VaultAccount } from '$/shared/components/vault/vault-account';
+import { VaultCategory } from '$/shared/components/vault/vault-category';
+import { Empty } from '$/shared/components/status/empty';
+import { Loading } from '$/shared/components/status/loading';
 
 @Component({
 	selector: 'app-vault',
 	templateUrl: './vault.html',
 	imports: [
-		ReactiveFormsModule,
-		LucideX,
 		LucidePlus,
-		Popup,
-		TextInput,
-		AreaInput,
+		VaultFormAccount,
+		VaultFormCategory,
 		Button,
 		VaultAccount,
+		VaultCategory,
 		Empty,
 		Loading,
 	],
@@ -35,71 +31,120 @@ import { Loading } from '$/shared/components/loading/loading';
 export class Vault {
 	private supabase = inject(SupabaseService);
 
-	loading = signal(false);
+	protected loading = signal(true);
 	protected ready = computed(() => !this.loading() && !this.supabase.loading());
 
-	protected accounts = signal<Account[]>([
-		{
-			name: 'AAA',
-			username: 'AAA',
-			password: 'AAA',
-			notes: 'AAA',
-			category: { text: 'default', color: '#ff0000' },
-		},
-	]);
+	protected accounts = signal<Account[]>([]);
+	protected readonly accountsMap = computed<Map<string, Account>>(
+		() => new Map(this.accounts().map((acc) => [acc.id, acc])),
+	);
+	protected categories = signal<Category[]>([]);
+	protected readonly categoriesMap = computed<Map<string, Category>>(
+		() => new Map(this.categories().map((cat) => [cat.id, cat])),
+	);
 
 	constructor() {
-		checkAuth(this.loadAccounts);
+		checkAuth(this.loadData);
 	}
 
-	private loadAccounts = async () => {};
+	private loadData = async () => {
+		this.accounts.set([]); // await this.supabase.getAccounts());
+		this.categories.set([]); //await this.supabase.getCategories());
 
-	protected newAccountForm = new FormGroup({
-		name: new FormControl('', [Validators.required]),
-		username: new FormControl('', [Validators.required]),
-		password: new FormControl('', [Validators.required]),
-		notes: new FormControl(''),
-	});
-
-	protected generatePassword = (): void => {
-		this.newAccountForm.get('password')?.reset('aa');
+		this.loading.set(false);
 	};
 
-	protected viewNewAccount = signal(false);
-	protected openNewAccount = (): void => {
-		this.viewNewAccount.set(true);
-	};
-	protected closeNewAccount = (): void => {
-		this.newAccountForm.reset();
-		this.viewNewAccount.set(false);
-	};
+	protected selectedAccount = signal<Account | null>(null);
+	protected selectedCategory = signal<Category | null>(null);
+	protected showAccountForm = signal(false);
+	protected showCategoryForm = signal(false);
+	protected formType: FormType = 'new-account';
 
-	protected createNewAccount = (e: Event): void => {
-		e.preventDefault();
+	protected newAccountForm = () => {
+		this.openForm('new-account');
+	};
+	protected viewAccountForm = (acc: Account) => {
+		this.openForm('view-account', acc, null);
+	};
+	protected newCategoryForm = () => {
+		this.openForm('new-category');
+	};
+	protected viewCategoryForm = (cat: Category) => {
+		this.openForm('view-category', null, cat);
+	};
+	private openForm = (
+		type: FormType | null = null,
+		selectedAccount: Account | null = null,
+		selectedCategory: Category | null = null,
+	): void => {
+		this.closeForm();
 
-		if (!this.newAccountForm.valid) {
-			return;
+		this.formType = type ? type : this.formType;
+
+		switch (this.formType) {
+			case 'new-account':
+			case 'view-account':
+				this.selectedAccount.set(selectedAccount);
+				this.showAccountForm.set(true);
+				break;
+			case 'new-category':
+			case 'view-category':
+				this.selectedCategory.set(selectedCategory);
+				this.showCategoryForm.set(true);
+				break;
 		}
+	};
+	protected closeForm = (): void => {
+		this.selectedAccount.set(null);
+		this.selectedCategory.set(null);
+		this.showAccountForm.set(false);
+		this.showCategoryForm.set(false);
+	};
 
+	protected createAccount = (acc: Account): void => {
 		this.loading.set(true);
 
-		this.accounts.update((x) => [
-			...x,
-			{
-				name: this.newAccountForm.value.name!,
-				username: this.newAccountForm.value.username!,
-				password: this.newAccountForm.value.password!,
-				notes: this.newAccountForm.value.notes!,
-				category: { text: 'default', color: '#ff0000' },
-			},
-		]);
+		acc.id = String(this.accounts().length + 1);
+		this.accounts.update((old) => [...old, acc]);
 
-		console.log(
-			this.newAccountForm.value.name,
-			this.newAccountForm.value.username,
-			this.newAccountForm.value.password,
-			this.newAccountForm.value.notes,
-		);
+		this.loading.set(false);
+	};
+	protected updateAccount = (acc: Account): void => {};
+	protected deleteAccount = (acc: Account): void => {};
+
+	protected createCategory = (cat: Category): void => {
+		this.loading.set(true);
+
+		// Supabase Query
+
+		cat.id = String(this.categories().length + 1);
+		this.categories.update((old) => [...old, cat]);
+
+		this.loading.set(false);
+	};
+	protected updateCategory = (cat: Category): void => {
+		this.loading.set(true);
+
+		// Supabase Query
+
+		let updatedIndex = this.categories().findIndex((old: Category) => old.id === cat.id);
+		this.categories.update((old) => {
+			old.splice(updatedIndex, 1, cat);
+			return old;
+		});
+
+		this.loading.set(false);
+	};
+	protected deleteCategory = (cat: Category): void => {
+		this.loading.set(true);
+
+		// Supabase Query
+
+		let deletedIndex = this.categories().findIndex((old: Category) => old.id === cat.id);
+		this.categories.update((old) => {
+			old.splice(deletedIndex, 1);
+			return old;
+		});
 
 		this.loading.set(false);
 	};

@@ -1,0 +1,16 @@
+<app-container extra="relative flex-row justify-between items-center gap-3">
+	<div class="flex flex-col">
+		<h1 class="font-semibold text-cta">{{ account().name }}</h1>
+		<span>{{ account().username }}</span>
+	</div>
+
+	<app-category-icon [category]="account().category" />
+
+	<a
+		(click)="onClick.emit()"
+		class="absolute top-0 left-0 bottom-0 right-0
+		container-rounded border-2
+		color-transition border-transparent hover:border-cta"
+	>
+	</a>
+</app-container>

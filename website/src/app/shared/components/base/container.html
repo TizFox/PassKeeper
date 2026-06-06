@@ -1,0 +1,12 @@
+	<section
+		[class]="popup() ? 'absolute top-0 left-0 bottom-0 right-0 z-10
+		flex justify-center items-center
+		backdrop-blur-sm' : ''"
+	>
+		<section [class]="extra() + ' ' + bg() + ' p-5
+			flex flex-col gap-5 container-rounded
+			base-shadow move-transition'"
+		>
+				<ng-content />
+		</section>
+	</section>

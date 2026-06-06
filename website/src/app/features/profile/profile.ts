@@ -5,12 +5,12 @@ import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { SupabaseService } from '$/core/supabase.service';
 import { checkAuth } from '$/core/authCheck';
 
-import { Container } from '$/shared/components/container/container';
-import { Avatar } from '$/shared/components/avatar/avatar';
-import { TextInput } from '$/shared/components/text-input/text-input';
-import { Button } from '$/shared/components/button/button';
+import { Container } from '$/shared/components/base/container';
+import { Avatar } from '$/shared/components/base/avatar';
+import { TextInput } from '$/shared/components/inputs/text-input';
+import { Button } from '$/shared/components/inputs/button';
 
-import { Loading } from '$/shared/components/loading/loading';
+import { Loading } from '$/shared/components/status/loading';
 
 @Component({
 	selector: 'app-profile',

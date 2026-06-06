@@ -1,5 +1,5 @@
 @if (ready()) {
-	<app-container class="gap-5">
+	<app-container extra="gap-5">
 		<div class="w-full flex gap-3">
 			<app-avatar />
 			<div class="flex flex-col">
@@ -17,16 +17,16 @@
 			<app-text-input placeholder="New Username" formControlName="newUsername" />
 			<app-text-input type="password" placeholder="New Password" formControlName="newPassword" />
 
-			<app-button type="submit" class="w-full">
+			<app-button type="submit" extra="w-full">
 				{{loading() ? 'Loading...' : 'UPDATE'}}
 			</app-button>
 
 			<div class="w-full flex gap-3">
-				<app-button	(onClick)="handler($event, 'logout')" class="w-full">
+				<app-button	(onClick)="handler($event, 'logout')" extra="w-full">
 					{{loading() ? 'Loading...' : 'LOGOUT'}}
 				</app-button>
 
-				<app-button (onClick)="handler($event, 'delete')" class="w-full">
+				<app-button (onClick)="handler($event, 'delete')" extra="w-full">
 					{{loading() ? 'Loading...' : 'DELETE'}}
 				</app-button>
 			</div>

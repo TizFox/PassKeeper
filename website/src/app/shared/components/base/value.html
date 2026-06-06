@@ -1,0 +1,6 @@
+<span
+	[class]="(bgColor() === '' ? 'bg-z2' : '') + ' col-span-3 p-1 base-rounded font-semibold'"
+	[style.backgroundColor]="bgColor() !== '' ? bgColor() : null"
+>
+	<ng-content />
+</span>
