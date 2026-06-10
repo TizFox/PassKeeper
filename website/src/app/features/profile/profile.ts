@@ -21,7 +21,6 @@ export class Profile {
 	protected supabase: SupabaseService = inject(SupabaseService);
 
 	protected loading = signal(false);
-	protected ready = computed(() => !this.loading() && !this.supabase.loading());
 
 	protected profileForm = new FormGroup({
 		newUsername: new FormControl(''),
@@ -88,39 +87,3 @@ export class Profile {
 		return true;
 	};
 }
-
-/*
-
-const changeNickname = async () => {
-		if (newNickname === "" || !newNicknameHandle) {
-			return;
-		}
-
-		const { error } = await supabase.auth.updateUser({
-			data: { nickname: newNickname },
-		});
-		if (error) {
-			showToast("error", "PROFILE", error.message);
-		} else {
-			showToast("info", "PROFILE", "New Nickname Saved");
-			newNicknameHandle?.clear();
-			await invalidateAll();
-		}
-	};
-const changePassword = async () => {
-		if (newPassword === "" || !newPasswordValid) {
-			return;
-		}
-
-		const { error } = await supabase.auth.updateUser({
-			password: newPassword,
-		});
-		if (error) {
-			showToast("error", "PROFILE", error.message);
-		} else {
-			showToast("info", "PROFILE", "New Password Saved");
-			newPasswordHandle?.clear();
-			await invalidateAll();
-		}
-	};
-	*/

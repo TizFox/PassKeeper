@@ -25,7 +25,7 @@ export type Account = {
 	username: string;
 	password: string;
 	notes?: string;
-	categoryId: string;
+	category_id: string;
 };
 
 export type Category = {
@@ -34,8 +34,8 @@ export type Category = {
 	icon: keyof typeof CATEGORY_ICONS;
 	color: string;
 };
-export const DEFAULT_CATEGORY: Category = {
-	id: '0000-0000-0000-0000',
+export const DEFAULT_CATEGORY = {
+	id: null,
 	name: 'Default',
 	icon: 'default',
 	color: '#000',

@@ -1,5 +1,7 @@
-@if (ready()) {
-	<app-container extra="gap-5">
+@if (supabase.loading()) {
+	<app-loading msg="Loading..." />
+} @else {
+	<app-container extra="w-min mx-auto gap-5">
 		<div class="w-full flex gap-3">
 			<app-avatar />
 			<div class="flex flex-col">
@@ -32,6 +34,4 @@
 			</div>
 		</form>
 	</app-container>
-}  @else {
-	<app-loading msg="Loading..." />
 }

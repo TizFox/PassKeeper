@@ -30,11 +30,8 @@ import { Loading } from '$/shared/components/status/loading';
 export class Vault {
 	protected supabase: SupabaseService = inject(SupabaseService);
 
-	protected loading = signal(false);
-	protected ready = computed(() => !this.loading() && !this.supabase.loading());
-
 	constructor() {
-		this.supabase.checkAuth(this.supabase.loadData);
+		this.supabase.checkAuth();
 	}
 
 	protected selectedAccountId = signal<string | null>(null);
@@ -46,6 +43,7 @@ export class Vault {
 		this.selectedAccountId.set(null);
 	};
 	protected viewAccountForm = (accId: string) => {
+		console.log(this.supabase.accounts()[accId]);
 		this.formType.set('view-account');
 		this.selectedAccountId.set(accId);
 	};

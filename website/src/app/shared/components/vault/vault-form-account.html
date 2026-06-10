@@ -7,12 +7,22 @@
 		<div class="flex gap-1">
 			@if (type() === "view-account") {
 				<app-button
-					(onClick)="close.emit()"
+					(onClick)="modify.emit()"
 					p="p-1"
 				>
 					<svg lucidePencil class="w-6 h-6" strokeWidth="3"></svg>
 				</app-button>
 			}
+
+			@if (type() === "modify-account") {
+				<app-button
+					(onClick)="delete()"
+					p="p-1"
+				>
+					<svg lucideTrash2 class="w-6 h-6" strokeWidth="3"></svg>
+				</app-button>
+			}
+
 			<app-button
 				(onClick)="close.emit()"
 				p="p-1"

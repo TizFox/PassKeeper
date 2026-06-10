@@ -51,7 +51,7 @@ export class SupabaseService {
 		);
 	}
 	checkAuth = async (callback?: () => unknown) => {
-		effect(async () => {
+		let check = effect(async () => {
 			if (!this.loading()) {
 				if (!this._user()) {
 					this.router.navigate(['/auth']);
@@ -61,6 +61,7 @@ export class SupabaseService {
 						await callback();
 					}
 				}
+				check.destroy();
 			}
 		});
 	};
@@ -146,11 +147,9 @@ export class SupabaseService {
 				username: acc.username,
 				password: acc.password,
 				notes: acc.notes,
-				categoryId: acc.categoty_id,
+				category_id: acc.category_id,
 			} as Account;
 		});
-
-		console.log(accounts);
 
 		return accounts;
 	};
@@ -170,29 +169,22 @@ export class SupabaseService {
 			} as Category;
 		});
 
-		console.log(categories);
-
 		return categories;
 	};
 
 	loadData = async () => {
+		this.loading.set(true);
+
 		this._profile.set({
 			email: this._user()?.email!,
 			createdAt: formatDate(this._user()?.created_at!),
 			username: this._user()?.user_metadata['username'],
 		});
 
-		this._accounts.set([
-			{
-				id: '0',
-				name: 'test',
-				username: 'test',
-				password: 'test',
-				notes: 'test',
-				categoryId: '0',
-			},
-		]); // await this.supabase.getAccounts());
-		this._categories.set([{ id: '0', name: 'test', icon: 'finance', color: '#ff0000' }]); //await this.supabase.getCategories());
+		this._accounts.set(await this.getAccounts());
+		this._categories.set(await this.getCategories());
+
+		this.loading.set(false);
 	};
 
 	updateProfile = async ({
@@ -225,37 +217,96 @@ export class SupabaseService {
 	};
 
 	newAccount = async (acc: Account) => {
-		// Supabase Query
+		const { id, ...insertAcc } = acc;
 
-		acc.id = String(this._accounts().length + 1);
+		console.log(insertAcc);
+
+		const { data, error } = await this.supabase
+			.from('accounts')
+			.insert({
+				user_id: this._user()?.id!,
+				...insertAcc,
+			})
+			.select()
+			.single();
+		if (error) {
+			console.log(error.message);
+			return;
+		}
+
+		acc.id = data.id;
 		this._accounts.update((old) => [...old, acc]);
 	};
 	modAccount = async (acc: Account) => {
-		// Supabase Query
+		const { error } = await this.supabase
+			.from('accounts')
+			.update(acc)
+			.eq('id', acc.id)
+			.eq('user_id', this._user()?.id!);
+		if (error) {
+			console.log(error.message);
+			return;
+		}
 
 		this._accounts.update((old) => old.map((oldAcc) => (oldAcc.id === acc.id ? acc : oldAcc)));
 	};
 	delAccount = async (acc: Account) => {
-		// Supabase Query
+		const { error } = await this.supabase
+			.from('accounts')
+			.delete()
+			.eq('id', acc.id)
+			.eq('user_id', this._user()?.id!);
+		if (error) {
+			console.log(error.message);
+			return;
+		}
 
-		this._categories.update((old) => old.filter((oldAcc) => oldAcc.id !== acc.id));
+		this._accounts.update((old) => old.filter((oldAcc) => oldAcc.id !== acc.id));
 	};
 
 	newCategory = async (cat: Category) => {
-		// Supabase Query
+		const { id, ...insertCat } = cat;
+		const { data, error } = await this.supabase
+			.from('categories')
+			.insert({
+				user_id: this._user()?.id!,
+				...insertCat,
+			})
+			.select()
+			.single();
+		if (error) {
+			console.log(error.message);
+			return;
+		}
 
-		cat.id = String(this._categories().length + 1);
+		cat.id = data.id;
 		this._categories.update((old) => [...old, cat]);
 	};
 	modCategory = async (cat: Category) => {
-		// Supabase Query
+		const { error } = await this.supabase
+			.from('categories')
+			.update(cat)
+			.eq('id', cat.id)
+			.eq('user_id', this._user()?.id!);
+		if (error) {
+			console.log(error.message);
+			return;
+		}
 
 		this._categories.update((old) =>
 			old.map((oldCat) => (oldCat.id === cat.id ? cat : oldCat)),
 		);
 	};
 	delCategory = async (cat: Category) => {
-		// Supabase Query
+		const { error } = await this.supabase
+			.from('categories')
+			.delete()
+			.eq('id', cat.id)
+			.eq('user_id', this._user()?.id!);
+		if (error) {
+			console.log(error.message);
+			return;
+		}
 
 		this._categories.update((old) => old.filter((oldCat) => oldCat.id !== cat.id));
 	};

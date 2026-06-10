@@ -2,7 +2,7 @@ import { Component, inject, input, output, computed, effect } from '@angular/cor
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 
-import { LucidePencil, LucideX } from '@lucide/angular';
+import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { Account, Category, DEFAULT_CATEGORY, FormType } from '$/core/types';
@@ -28,6 +28,7 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 	imports: [
 		ReactiveFormsModule,
 		LucidePencil,
+		LucideTrash2,
 		LucideX,
 		DashToTitlePipe,
 		Container,
@@ -71,7 +72,9 @@ export class VaultFormAccount {
 					username: this.account()?.username ?? '',
 					password: this.account()?.password ?? '',
 					notes: this.account()?.notes ?? '',
-					categoryName: this.currentCategory().name ?? DEFAULT_CATEGORY.name,
+					categoryName:
+						this.supabase.categories()[this.account().category_id]?.name ??
+						DEFAULT_CATEGORY.name,
 				});
 			}
 		});
@@ -87,18 +90,19 @@ export class VaultFormAccount {
 			username: this.accountFormValue().username,
 			password: this.accountFormValue().password,
 			notes: this.accountFormValue().notes,
-			categoryId:
+			category_id:
 				Object.values(this.supabase.categories()).find(
 					(cat) => cat.name === this.accountFormValue().categoryName,
 				)?.id ?? DEFAULT_CATEGORY.id,
 		} as Account;
 	});
 	protected readonly currentCategory = computed<Category>(() => {
-		return this.supabase.categories()[this.currentAccount().categoryId] ?? DEFAULT_CATEGORY;
+		return this.supabase.categories()[this.currentAccount().category_id] ?? DEFAULT_CATEGORY;
 	});
 
 	protected delete = async (): Promise<void> => {
 		await this.supabase.delAccount(this.currentAccount());
+		console.log('Del Account:', this.currentAccount());
 		this.close.emit();
 	};
 
@@ -114,11 +118,11 @@ export class VaultFormAccount {
 		switch (this.type()) {
 			case 'new-account':
 				await this.supabase.newAccount(this.currentAccount());
+				console.log('New Account:', this.currentAccount());
 				break;
-			case 'view-account':
+			case 'modify-account':
 				await this.supabase.modAccount(this.currentAccount());
-				break;
-			default:
+				console.log('Mod Account:', this.currentAccount());
 				break;
 		}
 

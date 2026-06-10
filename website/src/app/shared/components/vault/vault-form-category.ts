@@ -2,7 +2,7 @@ import { Component, inject, input, output, computed, effect } from '@angular/cor
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 
-import { LucidePencil, LucideTrash, LucideX } from '@lucide/angular';
+import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { Category, CATEGORY_ICONS, DEFAULT_CATEGORY, FormType } from '$/core/types';
@@ -26,7 +26,7 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 	imports: [
 		ReactiveFormsModule,
 		LucidePencil,
-		LucideTrash,
+		LucideTrash2,
 		LucideX,
 		DashToTitlePipe,
 		Container,
@@ -83,6 +83,7 @@ export class VaultFormCategory {
 
 	protected delete = async (): Promise<void> => {
 		await this.supabase.delCategory(this.currentCategory());
+		console.log('Del Category:', this.currentCategory());
 		this.close.emit();
 	};
 
@@ -98,11 +99,11 @@ export class VaultFormCategory {
 		switch (this.type()) {
 			case 'new-category':
 				await this.supabase.newCategory(this.currentCategory());
-				console.log('categorie dopo new:', this.supabase.categoriesIds()); // cosa stampa?
+				console.log('New Category:', this.currentCategory());
 				break;
 			case 'modify-category':
 				await this.supabase.modCategory(this.currentCategory());
-				console.log('categorie dopo mod:', this.supabase.categoriesIds()); // cosa stampa?
+				console.log('Mod Category:', this.currentCategory());
 				break;
 		}
 
