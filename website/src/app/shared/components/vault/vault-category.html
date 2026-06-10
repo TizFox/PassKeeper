@@ -4,15 +4,9 @@
 	container-rounded"
 >
 	<app-category-icon [category]="category()" simple />
-	@if (category().name !== '') {
-		<h2 class="flex-1">
-			{{ category().name }}
-		</h2>
-	} @else {
-		<h2 class="flex-1 text-pla">
-			Category Name
-		</h2>
-	}
+	<h2 [class]="'flex-1 ' + (category().name !== '' ? 'truncate' : 'text-pla')">
+		{{ category().name !== '' ? category().name : 'Category Name' }}
+	</h2>
 
 	<a
 		(click)="onClick.emit()"

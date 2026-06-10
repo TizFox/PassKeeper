@@ -1,19 +1,21 @@
-import { Component, input, output, type Signal, computed, effect } from '@angular/core';
+import { Component, inject, input, output, computed, effect } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { LucidePencil, LucideX } from '@lucide/angular';
 
+import { SupabaseService } from '$/core/supabase.service';
 import { Account, Category, DEFAULT_CATEGORY, FormType } from '$/core/types';
 
 import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
-
 import { Container } from '$/shared/components/base/container';
 import { TextInput } from '$/shared/components/inputs/text-input';
 import { AreaInput } from '$/shared/components/inputs/area-input';
 import { SelectInput } from '$/shared/components/inputs/select-input';
 import { CategoryIcon } from '$/shared/components/vault/category-icon';
 import { Button } from '$/shared/components/inputs/button';
+import { Value } from '$/shared/components/base/value';
+import { VaultCategory } from '$/shared/components/vault/vault-category';
 
 @Component({
 	selector: 'app-vault-form-account',
@@ -34,21 +36,23 @@ import { Button } from '$/shared/components/inputs/button';
 		SelectInput,
 		CategoryIcon,
 		Button,
+		Value,
+		VaultCategory,
 	],
 })
 export class VaultFormAccount {
+	protected supabase: SupabaseService = inject(SupabaseService);
+
 	type = input.required<FormType>();
-	categories = input.required<Category[]>();
+	modify = output<void>();
 	close = output<void>();
 
-	account = input<Account | null>();
-	createAccount = output<Account>();
-	updateAccount = output<Account>();
-	deleteAccount = output<Account>();
+	accountId = input<string | null>(null);
+	protected account = computed(() => this.supabase.accounts()[this.accountId() ?? '']);
 
-	protected categoriesNames = computed(() => [
+	protected possibleCategories = computed(() => [
 		DEFAULT_CATEGORY.name,
-		...this.categories().map((cat: Category) => cat.name),
+		...Object.values(this.supabase.categories()).map((cat: Category) => cat.name),
 	]);
 
 	protected accountForm = new FormGroup({
@@ -57,22 +61,6 @@ export class VaultFormAccount {
 		password: new FormControl('', [Validators.required]),
 		notes: new FormControl(''),
 		categoryName: new FormControl(DEFAULT_CATEGORY.name),
-	});
-	private readonly accountFormValue = toSignal(this.accountForm.valueChanges, {
-		initialValue: this.accountForm.getRawValue(),
-	});
-	protected readonly currentAccount = computed(() => {
-		return {
-			id: this.account()?.id,
-			name: this.accountFormValue().name,
-			username: this.accountFormValue().username,
-			password: this.accountFormValue().password,
-			notes: this.accountFormValue().notes,
-			category:
-				this.categories().find(
-					(cat) => cat.name === this.accountFormValue().categoryName,
-				) ?? DEFAULT_CATEGORY,
-		} as Account;
 	});
 
 	constructor() {
@@ -83,13 +71,38 @@ export class VaultFormAccount {
 					username: this.account()?.username ?? '',
 					password: this.account()?.password ?? '',
 					notes: this.account()?.notes ?? '',
-					categoryName: this.account()?.category.name ?? DEFAULT_CATEGORY.name,
+					categoryName: this.currentCategory().name ?? DEFAULT_CATEGORY.name,
 				});
 			}
 		});
 	}
 
-	protected formSubmit = (e: Event): void => {
+	private readonly accountFormValue = toSignal(this.accountForm.valueChanges, {
+		initialValue: this.accountForm.getRawValue(),
+	});
+	protected readonly currentAccount = computed(() => {
+		return {
+			id: this.accountId() ?? this.account()?.id,
+			name: this.accountFormValue().name,
+			username: this.accountFormValue().username,
+			password: this.accountFormValue().password,
+			notes: this.accountFormValue().notes,
+			categoryId:
+				Object.values(this.supabase.categories()).find(
+					(cat) => cat.name === this.accountFormValue().categoryName,
+				)?.id ?? DEFAULT_CATEGORY.id,
+		} as Account;
+	});
+	protected readonly currentCategory = computed<Category>(() => {
+		return this.supabase.categories()[this.currentAccount().categoryId] ?? DEFAULT_CATEGORY;
+	});
+
+	protected delete = async (): Promise<void> => {
+		await this.supabase.delAccount(this.currentAccount());
+		this.close.emit();
+	};
+
+	protected formSubmit = async (e: Event): Promise<void> => {
 		e.preventDefault();
 
 		if (!this.accountForm.valid) {
@@ -100,10 +113,10 @@ export class VaultFormAccount {
 
 		switch (this.type()) {
 			case 'new-account':
-				this.createAccount.emit(this.currentAccount());
+				await this.supabase.newAccount(this.currentAccount());
 				break;
 			case 'view-account':
-				this.updateAccount.emit(this.currentAccount());
+				await this.supabase.modAccount(this.currentAccount());
 				break;
 			default:
 				break;

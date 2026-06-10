@@ -17,9 +17,9 @@ export class MasterService {
 	};
 
 	encript = (str: string): string => {
-		return 'ENCRYPYED';
+		return 'ENCRYPYED_' + str;
 	};
 	decript = (enc: string): string => {
-		return 'DECRIPTED';
+		return 'DECRIPTED_' + enc;
 	};
 }

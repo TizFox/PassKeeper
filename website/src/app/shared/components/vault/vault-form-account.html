@@ -22,31 +22,43 @@
 		</div>
 	</div>
 
-	<form
-		[formGroup]="accountForm"
-		(ngSubmit)="formSubmit($event)"
-		class="flex flex-col gap-3"
-	>
-		<app-text-input placeholder="Account Name" formControlName="name" required />
-		<app-text-input placeholder="Username / Email" formControlName="username" required />
-		<div class="flex gap-2">
-			<app-text-input type="password" placeholder="Password" notObscured formControlName="password" required />
-			<app-button
-				(onClick)="generatePassword()"
-				p="px-3"
-			>
-				Generate
-			</app-button>
-		</div>
-		<app-area-input placeholder="Notes" formControlName="notes" />
-		<div class="flex justify-between items-end">
-			<div class="flex items-center gap-1">
-				<app-select-input label="Category" [optionList]="categoriesNames()" formControlName="categoryName" />
-				<app-category-icon [category]="currentAccount().category" simple />
+	@if (type() === "new-account" || type() === "modify-account") {
+		<form
+			[formGroup]="accountForm"
+			(ngSubmit)="formSubmit($event)"
+			class="flex flex-col gap-3"
+		>
+			<app-text-input placeholder="Account Name" formControlName="name" required />
+			<app-text-input placeholder="Username / Email" formControlName="username" required />
+			<div class="flex gap-2">
+				<app-text-input type="password" placeholder="Password" notObscured formControlName="password" required />
+				<app-button
+					(onClick)="generatePassword()"
+					p="px-3"
+				>
+					Generate
+				</app-button>
 			</div>
-			<app-button type="submit">
-				{{ "Confirm" }}
-			</app-button>
+			<app-area-input placeholder="Notes" formControlName="notes" />
+			<div class="flex justify-between items-end">
+				<div class="flex items-center gap-1">
+					<app-select-input label="Category" [optionList]="possibleCategories()" formControlName="categoryName" />
+					<app-category-icon [category]="currentCategory()" simple />
+				</div>
+				<app-button type="submit">
+					{{ "Confirm" }}
+				</app-button>
+			</div>
+		</form>
+	} @else {
+		<div class="grid grid-cols-4 gap-y-2">
+			<span>Name:</span> <app-value>{{ currentAccount().name }}</app-value>
+			<span>Username:</span> <app-value>{{ currentAccount().username }}</app-value>
+			<span>Password:</span> <app-value>{{ currentAccount().password }}</app-value>
+			<span>Notes:</span> <app-value>{{ currentAccount().notes }}</app-value>
+			<div class="col-span-4 flex justify-center items-center">
+				<app-vault-category [category]="currentCategory()" />
+			</div>
 		</div>
-	</form>
+	}
 </app-container>

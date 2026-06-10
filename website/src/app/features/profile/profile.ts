@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 
 import { SupabaseService } from '$/core/supabase.service';
-import { checkAuth } from '$/core/authCheck';
 
 import { Container } from '$/shared/components/base/container';
 import { Avatar } from '$/shared/components/base/avatar';
@@ -19,7 +18,7 @@ import { Loading } from '$/shared/components/status/loading';
 })
 export class Profile {
 	private router: Router = inject(Router);
-	private supabase: SupabaseService = inject(SupabaseService);
+	protected supabase: SupabaseService = inject(SupabaseService);
 
 	protected loading = signal(false);
 	protected ready = computed(() => !this.loading() && !this.supabase.loading());
@@ -30,16 +29,8 @@ export class Profile {
 	});
 
 	constructor() {
-		checkAuth(() => {});
+		this.supabase.checkAuth(() => {});
 	}
-
-	protected profile = computed(() => {
-		return {
-			email: this.supabase.user?.email!,
-			createtAt: formatDate(this.supabase.user?.created_at!),
-			username: this.supabase.user?.user_metadata['username'],
-		};
-	});
 
 	protected handler = async (e: Event, type: string): Promise<void> => {
 		e.preventDefault();
@@ -69,13 +60,16 @@ export class Profile {
 			return false;
 		}
 
-		const { err } = await this.supabase.updateUser({
+		const { err } = await this.supabase.updateProfile({
 			newUsername: this.profileForm.value.newUsername ?? null,
 			newPassword: this.profileForm.value.newPassword ?? null,
 		});
 		if (err) {
 			console.log(err);
+			return false;
 		}
+
+		this.profileForm.reset();
 
 		return true;
 	};
@@ -93,14 +87,6 @@ export class Profile {
 		this.router.navigate(['/']);
 		return true;
 	};
-}
-
-function twoDigit(n: number): string {
-	return (Math.floor(n / 10) === 0 ? '0' : '') + n;
-}
-function formatDate(s: string): string {
-	let date = new Date(s);
-	return `${twoDigit(date.getDate())} / ${twoDigit(date.getMonth() + 1)} / ${date.getFullYear()} - ${twoDigit(date.getHours())}:${twoDigit(date.getMinutes())}`;
 }
 
 /*

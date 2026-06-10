@@ -1,28 +1,25 @@
-@if (showAccountForm()) {
+@if (formType().split('-')[1] === 'account') {
 	<app-vault-form-account
-		[type]="formType"
-		[categories]="categories()"
+		[type]="formType()"
+		(modify)="modifyForm()"
 		(close)="closeForm()"
-		[account]="selectedAccount()"
-		(createAccount)="createAccount($event)"
-		(updateAccount)="updateAccount($event)"
-		(deleteAccount)="deleteAccount($event)"	/>
-}
-@if (showCategoryForm()) {
+		[accountId]="selectedAccountId()"
+		/>
+} @else if (formType().split('-')[1] === 'category') {
 	<app-vault-form-category
-		[typeInput]="formType"
-		[categories]="categories()"
+		[type]="formType()"
+		(modify)="modifyForm()"
 		(close)="closeForm()"
-		[category]="selectedCategory()"
-		(createCategory)="createCategory($event)"
-		(updateCategory)="updateCategory($event)"
-		(deleteCategory)="deleteCategory($event)" />
+		[categoryId]="selectedCategoryId()"
+	/>
 }
 
-@if (ready()) {
+@if (!ready()) {
+	<app-loading msg="Finding your Accounts..." />
+} @else {
 	<div class="w-full h-full grid grid-cols-7 gap-10">
 		<section class="col-span-5 flex flex-col gap-3">
-			@if (accounts().length > 0) {
+			@if (supabase.accountsIds().length > 0) {
 				<div class="pl-1 flex justify-between">
 					<h1 class="pl-2 border-l-3 border-cta base-rounded">Accounts</h1>
 					<app-button (onClick)="newAccountForm()" p="p-1">
@@ -30,10 +27,10 @@
 					</app-button>
 				</div>
 
-				@for (acc of accounts(); track acc.id) {
+				@for (accId of supabase.accountsIds(); track accId) {
 					<app-vault-account
-						[account]="acc"
-						(onClick)="viewAccountForm(acc)"
+						[accountId]="accId"
+						(onClick)="viewAccountForm(accId)"
 					/>
 				}
 			} @else {
@@ -46,7 +43,7 @@
 		</section>
 
 		<section class="col-span-2 flex flex-col gap-3">
-			@if (categories().length > 0) {
+			@if (supabase.categoriesIds().length > 0) {
 				<div class="flex justify-between">
 					<h1 class="pl-2 border-l-3 border-cta base-rounded">Categories</h1>
 					<app-button (onClick)="newCategoryForm()" p="p-1">
@@ -54,10 +51,10 @@
 					</app-button>
 				</div>
 
-				@for (cat of categories(); track cat.id) {
+				@for (catId of supabase.categoriesIds(); track catId) {
 					<app-vault-category
-						[category]="cat"
-						(onClick)="viewCategoryForm(cat)"
+						[category]="supabase.categories()[catId]"
+						(onClick)="viewCategoryForm(catId)"
 					/>
 				}
 			} @else {
@@ -69,6 +66,4 @@
 			}
 		</section>
 	</div>
-} @else {
-	<app-loading msg="Finding your Accounts..." />
 }

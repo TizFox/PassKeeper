@@ -1,6 +1,7 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output, computed } from '@angular/core';
 
-import { Account } from '$/core/types';
+import { SupabaseService } from '$/core/supabase.service';
+import { Account, Category, DEFAULT_CATEGORY } from '$/core/types';
 
 import { Container } from '$/shared/components/base/container';
 import { CategoryIcon } from '$/shared/components/vault/category-icon';
@@ -16,6 +17,14 @@ import { CategoryIcon } from '$/shared/components/vault/category-icon';
 	imports: [Container, CategoryIcon],
 })
 export class VaultAccount {
-	account = input.required<Account>();
+	private supabase: SupabaseService = inject(SupabaseService);
+
+	accountId = input.required<string>();
 	onClick = output();
+
+	account = computed<Account>(() => this.supabase.accounts()[this.accountId()]);
+
+	protected currentCategory = computed(() => {
+		return this.supabase.categories()[this.account().categoryId] ?? DEFAULT_CATEGORY;
+	});
 }

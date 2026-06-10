@@ -1,10 +1,11 @@
-import { Component, input, output, computed, effect, linkedSignal } from '@angular/core';
+import { Component, inject, input, output, computed, effect } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { LucidePencil, LucideTrash, LucideX } from '@lucide/angular';
 
-import { Category, CATEGORY_ICONS, FormType } from '$/core/types';
+import { SupabaseService } from '$/core/supabase.service';
+import { Category, CATEGORY_ICONS, DEFAULT_CATEGORY, FormType } from '$/core/types';
 
 import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
 import { Container } from '$/shared/components/base/container';
@@ -12,7 +13,7 @@ import { TextInput } from '$/shared/components/inputs/text-input';
 import { SelectInput } from '$/shared/components/inputs/select-input';
 import { Button } from '$/shared/components/inputs/button';
 import { Value } from '$/shared/components/base/value';
-import { VaultCategory } from './vault-category';
+import { VaultCategory } from '$/shared/components/vault/vault-category';
 
 @Component({
 	selector: 'app-vault-form-category',
@@ -37,15 +38,16 @@ import { VaultCategory } from './vault-category';
 	],
 })
 export class VaultFormCategory {
-	typeInput = input.required<FormType>();
-	type = linkedSignal(() => this.typeInput());
-	categories = input.required<Category[]>();
+	protected supabase: SupabaseService = inject(SupabaseService);
+
+	type = input.required<FormType>();
+	modify = output<void>();
 	close = output<void>();
 
-	category = input<Category | null>();
-	createCategory = output<Category>();
-	updateCategory = output<Category>();
-	deleteCategory = output<Category>();
+	categoryId = input<string | null>(null);
+	protected category = computed(
+		() => this.supabase.categories()[this.categoryId() ?? ''] ?? DEFAULT_CATEGORY,
+	);
 
 	protected possibleIcons = Object.keys(CATEGORY_ICONS);
 
@@ -53,18 +55,6 @@ export class VaultFormCategory {
 		name: new FormControl('', [Validators.required]),
 		icon: new FormControl('', [Validators.required]),
 		color: new FormControl('#000', [Validators.required]),
-	});
-
-	private readonly categoryFormValue = toSignal(this.categoryForm.valueChanges, {
-		initialValue: this.categoryForm.getRawValue(),
-	});
-	protected readonly currentCategory = computed(() => {
-		return {
-			id: this.category()?.id,
-			name: this.categoryFormValue().name,
-			icon: this.categoryFormValue().icon,
-			color: this.categoryFormValue().color,
-		} as Category;
 	});
 
 	constructor() {
@@ -79,15 +69,24 @@ export class VaultFormCategory {
 		});
 	}
 
-	protected modify = (): void => {
-		this.type.set('modify-category');
-	};
-	protected delete = (): void => {
-		this.deleteCategory.emit(this.currentCategory());
+	private readonly categoryFormValue = toSignal(this.categoryForm.valueChanges, {
+		initialValue: this.categoryForm.getRawValue(),
+	});
+	protected readonly currentCategory = computed(() => {
+		return {
+			id: this.categoryId() ?? this.category()?.id,
+			name: this.categoryFormValue().name,
+			icon: this.categoryFormValue().icon,
+			color: this.categoryFormValue().color,
+		} as Category;
+	});
+
+	protected delete = async (): Promise<void> => {
+		await this.supabase.delCategory(this.currentCategory());
 		this.close.emit();
 	};
 
-	protected formSubmit = (e: Event): void => {
+	protected formSubmit = async (e: Event): Promise<void> => {
 		e.preventDefault();
 
 		if (!this.categoryForm.valid) {
@@ -98,12 +97,12 @@ export class VaultFormCategory {
 
 		switch (this.type()) {
 			case 'new-category':
-				this.createCategory.emit(this.currentCategory());
+				await this.supabase.newCategory(this.currentCategory());
+				console.log('categorie dopo new:', this.supabase.categoriesIds()); // cosa stampa?
 				break;
 			case 'modify-category':
-				this.updateCategory.emit(this.currentCategory());
-				break;
-			default:
+				await this.supabase.modCategory(this.currentCategory());
+				console.log('categorie dopo mod:', this.supabase.categoriesIds()); // cosa stampa?
 				break;
 		}
 

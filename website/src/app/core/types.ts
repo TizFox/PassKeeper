@@ -13,13 +13,19 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
 	food: LucidePizza,
 };
 
+export type Profile = {
+	email: string;
+	createdAt: string;
+	username: string;
+};
+
 export type Account = {
 	id: string;
 	name: string;
 	username: string;
 	password: string;
 	notes?: string;
-	category: Category;
+	categoryId: string;
 };
 
 export type Category = {
@@ -36,6 +42,7 @@ export const DEFAULT_CATEGORY: Category = {
 };
 
 export type FormType =
+	| 'no-form'
 	| 'new-account'
 	| 'view-account'
 	| 'modify-account'

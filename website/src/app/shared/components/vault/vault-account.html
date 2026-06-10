@@ -4,7 +4,7 @@
 		<span>{{ account().username }}</span>
 	</div>
 
-	<app-category-icon [category]="account().category" />
+	<app-category-icon [category]="currentCategory()" />
 
 	<a
 		(click)="onClick.emit()"

@@ -6,7 +6,7 @@
 		<div class="flex gap-1">
 			@if (type() === "view-category") {
 				<app-button
-					(onClick)="modify()"
+					(onClick)="modify.emit()"
 					p="p-1"
 				>
 					<svg lucidePencil class="w-6 h-6" strokeWidth="3"></svg>
