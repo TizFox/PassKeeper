@@ -4,6 +4,11 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 @Component({
 	selector: 'app-area-input',
 	templateUrl: './area-input.html',
+	styles: `
+		:host {
+			display: contents;
+		}
+	`,
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
