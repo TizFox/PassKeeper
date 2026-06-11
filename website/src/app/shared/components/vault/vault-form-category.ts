@@ -42,10 +42,11 @@ export class VaultFormCategory {
 
 	type = input.required<FormType>();
 	modify = output<void>();
+	delete = output<string>();
 	close = output<void>();
 
 	categoryId = input<string | null>(null);
-	protected category = computed(
+	private category = computed<Category>(
 		() => this.supabase.categories()[this.categoryId() ?? ''] ?? DEFAULT_CATEGORY,
 	);
 
@@ -57,6 +58,7 @@ export class VaultFormCategory {
 		color: new FormControl('#000', [Validators.required]),
 	});
 
+	// Set Form Values to input Category
 	constructor() {
 		effect(() => {
 			if (this.type() === 'view-category') {
@@ -69,10 +71,11 @@ export class VaultFormCategory {
 		});
 	}
 
+	// Get dynamic Account object with Form Values
 	private readonly categoryFormValue = toSignal(this.categoryForm.valueChanges, {
 		initialValue: this.categoryForm.getRawValue(),
 	});
-	protected readonly currentCategory = computed(() => {
+	protected readonly currentCategory = computed<Category>(() => {
 		return {
 			id: this.categoryId() ?? this.category()?.id,
 			name: this.categoryFormValue().name,
@@ -81,12 +84,6 @@ export class VaultFormCategory {
 		} as Category;
 	});
 
-	protected delete = async (): Promise<void> => {
-		await this.supabase.delCategory(this.currentCategory());
-		console.log('Del Category:', this.currentCategory());
-		this.close.emit();
-	};
-
 	protected formSubmit = async (e: Event): Promise<void> => {
 		e.preventDefault();
 
@@ -94,16 +91,14 @@ export class VaultFormCategory {
 			return;
 		}
 
-		console.log('CATEGORY FORM SUBMITTED:', this.currentCategory());
+		console.log(this.type(), ' - FORM SUBMITTED:', this.currentCategory());
 
 		switch (this.type()) {
 			case 'new-category':
 				await this.supabase.newCategory(this.currentCategory());
-				console.log('New Category:', this.currentCategory());
 				break;
 			case 'modify-category':
 				await this.supabase.modCategory(this.currentCategory());
-				console.log('Mod Category:', this.currentCategory());
 				break;
 		}
 

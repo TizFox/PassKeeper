@@ -1,7 +1,9 @@
 <app-container extra="relative flex-row justify-between items-center gap-3">
 	<div class="flex flex-col">
 		<h1 class="font-semibold text-cta">{{ account().name }}</h1>
-		<span>{{ account().username }}</span>
+		@if (account().username) {
+			<span>{{ account().username }}</span>
+		}
 	</div>
 
 	<app-category-icon [category]="currentCategory()" />

@@ -1,7 +1,8 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { validRoutes } from '$/app.routes';
+import { Component, inject } from '@angular/core';
 
 import { SupabaseService } from '$/core/supabase.service';
+
+import { Loading } from '$/shared/components/status/loading';
 
 import { Logo } from '$/shared/components/base/logo';
 import { Avatar } from '$/shared/components/base/avatar';
@@ -11,11 +12,8 @@ import { Button } from '$/shared/components/inputs/button';
 	selector: 'app-header',
 	templateUrl: './header.html',
 	styleUrl: './header.css',
-	imports: [Logo, Avatar, Button],
+	imports: [Loading, Logo, Avatar, Button],
 })
 export class Header {
-	private supabase: SupabaseService = inject(SupabaseService);
-
-	protected res = signal(validRoutes ?? []);
-	protected isLogged = computed(() => !!this.supabase.user);
+	protected supabase: SupabaseService = inject(SupabaseService);
 }

@@ -1,8 +1,10 @@
-<div class="flex-1 flex items-center gap-1">
-	<label>{{ label() }}:</label>
+<div [class]="extra() + ' flex items-center gap-1'">
+	@if (label() !== '') {
+		<label>{{ label() }}:</label>
+	}
 	<select
 		(change)="onSelect($event)"
-		class="w-full p-1
+		class="flex-1 w-full min-w-0 input-h
 		border-y-2 border-t-transparent border-b-pla
 		base-rounded
 		color-transition

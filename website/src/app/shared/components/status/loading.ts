@@ -13,5 +13,6 @@ import { LucideLoaderCircle } from '@lucide/angular';
 	imports: [LucideLoaderCircle],
 })
 export class Loading {
-	msg = input.required<string>();
+	msg = input<string>('');
+	w = input<string>('w-full');
 }

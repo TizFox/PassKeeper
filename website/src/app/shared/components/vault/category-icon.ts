@@ -1,6 +1,6 @@
 import { Component, input, booleanAttribute, computed } from '@angular/core';
 
-import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideDynamicIcon, LucideIcon } from '@lucide/angular';
 
 import { Category, CATEGORY_ICONS } from '$/core/types';
 
@@ -17,5 +17,5 @@ import { Category, CATEGORY_ICONS } from '$/core/types';
 export class CategoryIcon {
 	category = input.required<Category>();
 	simple = input(false, { transform: booleanAttribute });
-	icon = computed(() => CATEGORY_ICONS[this.category().icon]);
+	icon = computed<LucideIcon>(() => CATEGORY_ICONS[this.category().icon]);
 }

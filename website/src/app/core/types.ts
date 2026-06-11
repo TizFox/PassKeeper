@@ -1,16 +1,21 @@
 import {
 	LucideIcon,
 	LucideDatabase,
-	LucideAsterisk,
+	LucideSquareAsterisk,
 	LucideBanknote,
 	LucidePizza,
+	LucidePartyPopper,
+	LucideBriefcaseBusiness,
+	LucideAstroid,
 } from '@lucide/angular';
 
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
 	default: LucideDatabase,
-	general: LucideAsterisk,
+	general: LucideSquareAsterisk,
 	finance: LucideBanknote,
 	food: LucidePizza,
+	fun: LucidePartyPopper,
+	work: LucideBriefcaseBusiness,
 };
 
 export type Profile = {
@@ -22,8 +27,9 @@ export type Profile = {
 export type Account = {
 	id: string;
 	name: string;
-	username: string;
-	password: string;
+	username?: string;
+	email?: string;
+	password?: string;
 	notes?: string;
 	category_id: string;
 };

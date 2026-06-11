@@ -4,32 +4,31 @@ import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 
 import { SupabaseService } from '$/core/supabase.service';
 
+import { Loading } from '$/shared/components/status/loading';
+
 import { Container } from '$/shared/components/base/container';
 import { Avatar } from '$/shared/components/base/avatar';
 import { TextInput } from '$/shared/components/inputs/text-input';
 import { Button } from '$/shared/components/inputs/button';
 
-import { Loading } from '$/shared/components/status/loading';
-
 @Component({
 	selector: 'app-profile',
 	templateUrl: './profile.html',
-	imports: [ReactiveFormsModule, Container, Avatar, TextInput, Button, Loading],
+	imports: [ReactiveFormsModule, Loading, Container, Avatar, TextInput, Button],
 })
 export class Profile {
 	private router: Router = inject(Router);
 	protected supabase: SupabaseService = inject(SupabaseService);
+	constructor() {
+		this.supabase.checkAuth();
+	}
 
-	protected loading = signal(false);
+	protected loading = signal<boolean>(false);
 
 	protected profileForm = new FormGroup({
 		newUsername: new FormControl(''),
 		newPassword: new FormControl(''),
 	});
-
-	constructor() {
-		this.supabase.checkAuth(() => {});
-	}
 
 	protected handler = async (e: Event, type: string): Promise<void> => {
 		e.preventDefault();
@@ -44,8 +43,6 @@ export class Profile {
 				break;
 			case 'delete':
 				await this.handleDeleteAccount();
-				break;
-			default:
 				break;
 		}
 		this.loading.set(false);

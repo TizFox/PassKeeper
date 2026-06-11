@@ -27,7 +27,7 @@ export class SupabaseService {
 	get user(): User | null {
 		return this._user();
 	}
-	loading = signal(true);
+	loading = signal<boolean>(true);
 
 	constructor() {
 		this.supabase = createClient(env.supabaseUrl, env.supabaseKey);
@@ -250,18 +250,18 @@ export class SupabaseService {
 
 		this._accounts.update((old) => old.map((oldAcc) => (oldAcc.id === acc.id ? acc : oldAcc)));
 	};
-	delAccount = async (acc: Account) => {
+	delAccount = async (accId: string) => {
 		const { error } = await this.supabase
 			.from('accounts')
 			.delete()
-			.eq('id', acc.id)
+			.eq('id', accId)
 			.eq('user_id', this._user()?.id!);
 		if (error) {
 			console.log(error.message);
 			return;
 		}
 
-		this._accounts.update((old) => old.filter((oldAcc) => oldAcc.id !== acc.id));
+		this._accounts.update((old) => old.filter((oldAcc) => oldAcc.id !== accId));
 	};
 
 	newCategory = async (cat: Category) => {
@@ -297,18 +297,18 @@ export class SupabaseService {
 			old.map((oldCat) => (oldCat.id === cat.id ? cat : oldCat)),
 		);
 	};
-	delCategory = async (cat: Category) => {
+	delCategory = async (catId: string) => {
 		const { error } = await this.supabase
 			.from('categories')
 			.delete()
-			.eq('id', cat.id)
+			.eq('id', catId)
 			.eq('user_id', this._user()?.id!);
 		if (error) {
 			console.log(error.message);
 			return;
 		}
 
-		this._categories.update((old) => old.filter((oldCat) => oldCat.id !== cat.id));
+		this._categories.update((old) => old.filter((oldCat) => oldCat.id !== catId));
 	};
 }
 

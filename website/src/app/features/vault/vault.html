@@ -1,22 +1,24 @@
-@if (formType().split('-')[1] === 'account') {
-	<app-vault-form-account
-		[type]="formType()"
-		(modify)="modifyForm()"
-		(close)="closeForm()"
-		[accountId]="selectedAccountId()"
-		/>
-} @else if (formType().split('-')[1] === 'category') {
-	<app-vault-form-category
-		[type]="formType()"
-		(modify)="modifyForm()"
-		(close)="closeForm()"
-		[categoryId]="selectedCategoryId()"
-	/>
-}
-
 @if (supabase.loading()) {
 	<app-loading msg="Finding your Accounts..." />
 } @else {
+	@if (formData() === 'account') {
+		<app-vault-form-account
+			[type]="formType()"
+			(modify)="modifyForm()"
+			(close)="closeForm()"
+			(delete)="deleteForm($event)"
+			[accountId]="selectedAccountId()"
+			/>
+	} @else if (formData() === 'category') {
+		<app-vault-form-category
+			[type]="formType()"
+			(modify)="modifyForm()"
+			(close)="closeForm()"
+			(delete)="deleteForm($event)"
+			[categoryId]="selectedCategoryId()"
+		/>
+	}
+
 	<div class="w-full h-full grid grid-cols-7 gap-10">
 		<section class="col-span-5 flex flex-col gap-3">
 			@if (supabase.accountsIds().length > 0) {
@@ -27,11 +29,27 @@
 					</app-button>
 				</div>
 
-				@for (accId of supabase.accountsIds(); track accId) {
+				<form
+					[formGroup]="searchForm"
+					class="w-full p-3 bg-z1 container-rounded base-shadow flex gap-3
+					border-2 border-cta/30"
+				>
+					<app-text-input type="search" placeholder="Search" extra="flex-2" formControlName="search" />
+					<app-select-input [optionList]="possibleCategories()" extra="flex-1" formControlName="categoryName" />
+					<!--
+					<app-button type="submit" p="p-1">
+						<svg lucideSearch class="w-6 h-6" strokeWidth="3"></svg>
+					</app-button>
+					-->
+				</form>
+
+				@for (accId of filteredAccountsIds(); track accId) {
 					<app-vault-account
 						[account]="supabase.accounts()[accId]"
 						(onClick)="viewAccountForm(accId)"
 					/>
+				} @empty {
+					<app-empty msg="No Accounts Found" />
 				}
 			} @else {
 				<app-empty msg="No Accounts">

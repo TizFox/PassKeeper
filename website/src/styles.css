@@ -17,6 +17,10 @@
 	--color-z2: var(--color-gray-300);
 }
 
+@utility input-h {
+	@apply min-h-9;
+}
+
 @utility color-transition {
 	@apply transition-colors duration-200 ease-in-out;
 }

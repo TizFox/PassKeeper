@@ -4,16 +4,19 @@
 
 		<div class="flex-grow"></div>
 
-		@if (isLogged()) {
-			<app-button href="/vault">
-				VAULT
-			</app-button>
-			<app-avatar />
+		@if (supabase.loading()) {
+			<app-loading w="w-min" />
 		} @else {
-			<app-button href="/auth">
-				LOGIN
-			</app-button>
+			@if (supabase.user) {
+				<app-button href="/vault">
+					VAULT
+				</app-button>
+				<app-avatar />
+			} @else {
+				<app-button href="/auth">
+					LOGIN
+				</app-button>
+			}
 		}
-
 	</header>
 </section>

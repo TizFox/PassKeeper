@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { booleanAttribute, Component, input } from '@angular/core';
 
 import { LucideFrown } from '@lucide/angular';
 
@@ -14,4 +14,5 @@ import { LucideFrown } from '@lucide/angular';
 })
 export class Empty {
 	msg = input.required<string>();
+	noBorder = input(false, { transform: booleanAttribute });
 }

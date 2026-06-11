@@ -16,7 +16,7 @@
 
 			@if (type() === "modify-account") {
 				<app-button
-					(onClick)="delete()"
+					(onClick)="delete.emit(currentAccount().id)"
 					p="p-1"
 				>
 					<svg lucideTrash2 class="w-6 h-6" strokeWidth="3"></svg>
@@ -38,10 +38,11 @@
 			(ngSubmit)="formSubmit($event)"
 			class="flex flex-col gap-3"
 		>
-			<app-text-input placeholder="Account Name" formControlName="name" required />
-			<app-text-input placeholder="Username / Email" formControlName="username" required />
+			<app-text-input placeholder="Account Name" formControlName="name" />
+			<app-text-input placeholder="Username" formControlName="username" />
+			<app-text-input type="email" placeholder="Email" formControlName="email" />
 			<div class="flex gap-2">
-				<app-text-input type="password" placeholder="Password" notObscured formControlName="password" required />
+				<app-text-input type="password" placeholder="Password" notObscured formControlName="password" />
 				<app-button
 					(onClick)="generatePassword()"
 					p="px-3"

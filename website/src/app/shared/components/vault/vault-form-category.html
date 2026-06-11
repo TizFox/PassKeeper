@@ -15,7 +15,7 @@
 
 			@if (type() === "modify-category") {
 				<app-button
-					(onClick)="delete()"
+					(onClick)="delete.emit(currentCategory().id)"
 					p="p-1"
 				>
 					<svg lucideTrash2 class="w-6 h-6" strokeWidth="3"></svg>
@@ -37,7 +37,7 @@
 			(ngSubmit)="formSubmit($event)"
 			class="flex flex-col gap-3"
 		>
-			<app-text-input placeholder="Category Name" formControlName="name" required />
+			<app-text-input placeholder="Category Name" required formControlName="name" />
 
 			<app-select-input label="Icon" [optionList]="possibleIcons" formControlName="icon" />
 

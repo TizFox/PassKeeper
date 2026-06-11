@@ -11,6 +11,6 @@ import { Component, input, booleanAttribute } from '@angular/core';
 })
 export class Container {
 	popup = input(false, { transform: booleanAttribute });
-	extra = input('');
-	bg = input('bg-z1');
+	extra = input<string>('');
+	bg = input<string>('bg-z1');
 }

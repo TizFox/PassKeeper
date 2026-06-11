@@ -14,7 +14,7 @@ export const routes: Routes = [
 	{ path: '**', component: NotFound },
 ];
 
-type ValidRoute = { name: string; route: Route; show: boolean };
+export type ValidRoute = { name: string; route: Route; show: boolean };
 export const validRoutes: Array<ValidRoute> = routes
 	.map((r: Route) => {
 		let vr: ValidRoute = { name: '', route: r, show: true };

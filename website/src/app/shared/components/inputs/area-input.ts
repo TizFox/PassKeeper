@@ -13,11 +13,11 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 	],
 })
 export class AreaInput implements ControlValueAccessor {
-	placeholder = input('');
+	placeholder = input<string>('');
 	required = input(false, { transform: booleanAttribute });
 
-	protected value = signal('');
-	protected disabled = signal(false);
+	protected value = signal<string>('');
+	protected disabled = signal<boolean>(false);
 
 	protected onChange: (v: string) => void = () => {};
 	protected onTouched: () => void = () => {};

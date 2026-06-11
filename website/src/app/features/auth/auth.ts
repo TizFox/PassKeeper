@@ -4,6 +4,8 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
 
 import { SupabaseService } from '$/core/supabase.service';
 
+import { Loading } from '$/shared/components/status/loading';
+
 import { Container } from '$/shared/components/base/container';
 import { TextInput } from '$/shared/components/inputs/text-input';
 import { Button } from '$/shared/components/inputs/button';
@@ -11,18 +13,23 @@ import { Button } from '$/shared/components/inputs/button';
 @Component({
 	selector: 'app-auth',
 	templateUrl: './auth.html',
-	imports: [ReactiveFormsModule, Container, TextInput, Button],
+	imports: [ReactiveFormsModule, Loading, Container, TextInput, Button],
 })
 export class Auth {
 	private router: Router = inject(Router);
-	private supabase: SupabaseService = inject(SupabaseService);
-	protected loading = signal(false);
+	protected supabase: SupabaseService = inject(SupabaseService);
+	constructor() {
+		this.supabase.checkAuth(() => {
+			this.router.navigate(['/vault']);
+		});
+	}
 
-	protected isLogin = signal(true);
-	protected translateLogin = computed((): string =>
+	protected loading = signal<boolean>(false);
+	protected isLogin = signal<boolean>(true);
+	protected translateLogin = computed<string>(() =>
 		this.isLogin() ? 'translate-x-[50%]' : '-translate-x-[100vw]',
 	);
-	protected translateSignup = computed((): string =>
+	protected translateSignup = computed<string>(() =>
 		this.isLogin() ? 'translate-x-[100vw]' : '-translate-x-[50%]',
 	);
 
@@ -52,8 +59,6 @@ export class Auth {
 				break;
 			case 'signup':
 				success = await this.handleSignup();
-				break;
-			default:
 				break;
 		}
 		this.loading.set(false);

@@ -10,5 +10,5 @@ import { Component, input } from '@angular/core';
 	`,
 })
 export class Value {
-	bgColor = input('');
+	bgColor = input<string>('');
 }

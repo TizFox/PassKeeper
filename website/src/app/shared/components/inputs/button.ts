@@ -12,11 +12,11 @@ import { RouterLink } from '@angular/router';
 	imports: [RouterLink],
 })
 export class Button {
-	type = input('button');
+	type = input<string>('button');
 	onClick = output<Event>();
-	extra = input('');
-	p = input('px-3 py-1');
-	disabled = input(false);
+	extra = input<string>('');
+	p = input<string>('px-3');
+	disabled = input<boolean>(false);
 	href = input<string | null>(null);
 
 	protected handleClick = (e: Event) => {

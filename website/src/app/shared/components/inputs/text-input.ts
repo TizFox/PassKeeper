@@ -11,6 +11,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import {
 	LucideDynamicIcon,
+	LucideIcon,
+	LucideSearch,
 	LucideTextCursorInput,
 	LucideMail,
 	LucideLockKeyhole,
@@ -21,6 +23,11 @@ import {
 @Component({
 	selector: 'app-text-input',
 	templateUrl: './text-input.html',
+	styles: `
+		:host {
+			display: contents;
+		}
+	`,
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -31,17 +38,25 @@ import {
 	imports: [LucideDynamicIcon],
 })
 export class TextInput implements ControlValueAccessor {
-	type = input('text');
-	placeholder = input('');
-	required = input(false, { transform: booleanAttribute });
-	invalidIf = input(false);
+	type = input<string>('text');
+	placeholder = input<string>('');
+	extra = input<string>('');
 	notObscured = input(false, { transform: booleanAttribute });
+	required = input(false, { transform: booleanAttribute });
 
-	protected value = signal('');
-	protected disabled = signal(false);
+	protected value = signal<string>('');
+	protected disabled = signal<boolean>(false);
 
-	protected icon = computed(() => {
+	protected obscured = linkedSignal<boolean>(() => !this.notObscured());
+	protected passIcon = computed<LucideIcon>(() => (this.obscured() ? LucideEye : LucideEyeOff));
+	protected toggleObscured = () => {
+		this.obscured.update((old) => !old);
+	};
+
+	protected icon = computed<LucideIcon>(() => {
 		switch (this.type()) {
+			case 'search':
+				return LucideSearch;
 			case 'text':
 				return LucideTextCursorInput;
 			case 'email':
@@ -52,12 +67,6 @@ export class TextInput implements ControlValueAccessor {
 				return LucideTextCursorInput;
 		}
 	});
-
-	protected obscured = linkedSignal(() => !this.notObscured);
-	protected passIcon = computed(() => (this.obscured() ? LucideEye : LucideEyeOff));
-	protected toggleObscured = () => {
-		this.obscured.set(!this.obscured());
-	};
 
 	protected onChange: (v: string) => void = () => {};
 	protected onTouched: () => void = () => {};

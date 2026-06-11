@@ -16,9 +16,9 @@ import { SupabaseService } from '$/core/supabase.service';
 export class Avatar {
 	private supabase: SupabaseService = inject(SupabaseService);
 
-	size = input('w-(--avatar-size)');
+	size = input<string>('w-(--avatar-size)');
 
-	protected initials = computed(() =>
+	protected initials = computed<string>(() =>
 		this.supabase.user?.user_metadata['username']
 			.split(' ')
 			.map((s: string) => s.charAt(0))

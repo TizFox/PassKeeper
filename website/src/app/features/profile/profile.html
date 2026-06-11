@@ -1,5 +1,5 @@
 @if (supabase.loading()) {
-	<app-loading msg="Loading..." />
+	<app-loading msg="Checking your Account..." />
 } @else {
 	<app-container extra="w-min mx-auto gap-5">
 		<div class="w-full flex gap-3">
@@ -17,7 +17,7 @@
 			class="w-full flex flex-col gap-3"
 		>
 			<app-text-input placeholder="New Username" formControlName="newUsername" />
-			<app-text-input type="password" placeholder="New Password" formControlName="newPassword" />
+			<app-text-input type="password" placeholder="New Password" notObscured formControlName="newPassword" />
 
 			<app-button type="submit" extra="w-full">
 				{{loading() ? 'Loading...' : 'UPDATE'}}

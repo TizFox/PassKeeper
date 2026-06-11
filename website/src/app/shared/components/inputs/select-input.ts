@@ -6,6 +6,11 @@ import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
 @Component({
 	selector: 'app-select-input',
 	templateUrl: './select-input.html',
+	styles: `
+		:host {
+			display: contents;
+		}
+	`,
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -16,10 +21,11 @@ import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
 	imports: [DashToTitlePipe],
 })
 export class SelectInput implements ControlValueAccessor {
-	label = input.required<string>();
+	label = input<string>('');
 	optionList = input.required<string[]>();
+	extra = input<string>('');
 
-	protected value = signal('');
+	protected value = signal<string>('');
 
 	constructor() {
 		effect(() => {

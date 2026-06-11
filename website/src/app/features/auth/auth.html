@@ -1,62 +1,45 @@
-<section class="w-full grid grid-cols-2 auto-row-fr">
-	<!-- LOGIN -->
-	<app-container [extra]="translateLogin()">
-		<form
-			[formGroup]="loginForm"
-			(ngSubmit)="handler($event, 'login')"
-			class="flex flex-col gap-3"
-		>
-			<h1 class="w-full text-center">LOGIN</h1>
+@if (supabase.loading()) {
+	<app-loading msg="Loading..." />
+} @else {
+	<section class="w-full grid grid-cols-2 auto-row-fr">
+		<!-- LOGIN -->
+		<app-container [extra]="translateLogin()">
+			<form
+				[formGroup]="loginForm"
+				(ngSubmit)="handler($event, 'login')"
+				class="flex flex-col gap-3"
+			>
+				<h1 class="w-full text-center">LOGIN</h1>
 
-			<app-text-input type="email" placeholder="Email" formControlName="email" required />
-			<app-text-input type="password" placeholder="Password" formControlName="password" required />
-			<div class="invisible"><app-text-input /></div>
+				<app-text-input type="email" placeholder="Email" required formControlName="email" />
+				<app-text-input type="password" placeholder="Password" required formControlName="password" />
+				<div class="invisible"><app-text-input /></div>
 
-			<div class="w-full flex justify-between items-end">
-				<a (click)="switchForm()" class="link">Create an account?</a>
-				<app-button type="submit" [disabled]="loading()">{{ loading() ? "Loading..." : "Confirm" }}</app-button>
-			</div>
-		</form>
-	</app-container>
-
-	<!-- SIGNUP -->
-	<app-container [extra]="translateSignup()">
-		<form
-			[formGroup]="signupForm"
-			(ngSubmit)="handler($event, 'signup')"
-			class="flex flex-col gap-3"
-		>
-			<h1 class="w-full text-center">SIGNUP</h1>
-
-			<app-text-input placeholder="Username" formControlName="username" required />
-			<app-text-input type="email" placeholder="Email" formControlName="email" required />
-			<app-text-input type="password" placeholder="Password" formControlName="password" required />
-
-			<div class="w-full flex justify-between items-end">
-				<a (click)="switchForm()" class="link">Have an account?</a>
-				<app-button type="submit" [disabled]="loading()">{{ loading() ? "Loading..." : "Confirm" }}</app-button>
-			</div>
-		</form>
-	</app-container>
-
-	<!--
-	@for (formData of forms; track formData.name) {
-		<app-container [class]="formData.translate()">
-			<form (submit)="formData.handler($event)"
-				class="flex flex-col gap-3">
-				<h1 class="w-full text-center">{{formData.name.toUpperCase()}}</h1>
-				@for (formInput of formData.inputs; track formInput.label) {
-					@if (formInput.type === "blank") {
-						<div class="invisible"><app-text-input /></div>
-					} @else {
-						<app-text-input [type]="formInput.type" [placeholder]="formInput.label" required />
-					}
-				}
 				<div class="w-full flex justify-between items-end">
-					<a (click)="switchForm()" class="link">{{formData.switchMsg}}</a>
+					<a (click)="switchForm()" class="link">Create an account?</a>
 					<app-button type="submit">Confirm</app-button>
 				</div>
 			</form>
 		</app-container>
-		}-->
-</section>
+
+		<!-- SIGNUP -->
+		<app-container [extra]="translateSignup()">
+			<form
+				[formGroup]="signupForm"
+				(ngSubmit)="handler($event, 'signup')"
+				class="flex flex-col gap-3"
+			>
+				<h1 class="w-full text-center">SIGNUP</h1>
+
+				<app-text-input placeholder="Username" required formControlName="username" />
+				<app-text-input type="email" placeholder="Email" required formControlName="email" />
+				<app-text-input type="password" placeholder="Password" required formControlName="password" />
+
+				<div class="w-full flex justify-between items-end">
+					<a (click)="switchForm()" class="link">Have an account?</a>
+					<app-button type="submit">Confirm</app-button>
+				</div>
+			</form>
+		</app-container>
+	</section>
+}

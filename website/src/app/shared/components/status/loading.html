@@ -1,6 +1,8 @@
 <section
-	class="w-full h-full text-cta flex justify-center items-center gap-3"
+	[class]="w() + ' h-full text-cta flex justify-center items-center gap-3'"
 >
 	<svg lucideLoaderCircle class="w-15 h-15 animate-spin" strokeWidth="2"></svg>
-	<h1 class="font-semibold">{{msg()}}</h1>
+	@if (msg() !== '') {
+		<h1 class="font-semibold">{{msg()}}</h1>
+	}
 </section>

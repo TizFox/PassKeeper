@@ -16,5 +16,5 @@ import { CategoryIcon } from '$/shared/components/vault/category-icon';
 })
 export class VaultCategory {
 	category = input.required<Category>();
-	onClick = output();
+	onClick = output<void>();
 }
