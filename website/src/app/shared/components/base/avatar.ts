@@ -19,8 +19,9 @@ export class Avatar {
 	size = input<string>('w-(--avatar-size)');
 
 	protected initials = computed<string>(() =>
-		this.supabase.user?.user_metadata['username']
-			.split(' ')
+		this.supabase
+			.profile()
+			.username.split(' ')
 			.map((s: string) => s.charAt(0))
 			.slice(0, 2)
 			.join(''),

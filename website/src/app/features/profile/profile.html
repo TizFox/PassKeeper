@@ -5,9 +5,9 @@
 		<div class="w-full flex gap-3">
 			<app-avatar />
 			<div class="flex flex-col">
-				<h2 class="font-semibold text-cta">{{ supabase.profile.username }}</h2>
-				<span>{{ supabase.profile.email }} </span>
-				{{ supabase.profile.createdAt }}
+				<h2 class="font-semibold text-cta">{{ supabase.profile().username }}</h2>
+				<span>{{ supabase.profile().email }} </span>
+				{{ supabase.profile().createdAt }}
 			</div>
 		</div>
 

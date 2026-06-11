@@ -13,6 +13,7 @@ import {
 import { env } from 'src/env';
 import { MasterService } from '$/core/master.service';
 import { Profile, Account, Category } from '$/core/types';
+import { PassThrough } from 'stream';
 
 @Injectable({
 	providedIn: 'root',
@@ -74,12 +75,10 @@ export class SupabaseService {
 	};
 
 	private _profile = signal<Profile>({ email: '', createdAt: '', username: '' });
+	readonly profile = this._profile.asReadonly();
 	private _accounts = signal<Account[]>([]);
 	private _categories = signal<Category[]>([]);
 
-	get profile(): Profile {
-		return this._profile();
-	}
 	readonly accounts = computed<Record<string, Account>>(() => {
 		let obj: Record<string, Account> = {};
 		this._accounts().forEach((acc) => (obj[acc.id] = acc));
@@ -209,6 +208,7 @@ export class SupabaseService {
 			if (error) {
 				return { err: error.message };
 			}
+			this._profile.update((old) => ({ ...old, username: newUsername }) as Profile);
 		}
 		if (newPassword) {
 			const { error } = await this.supabase.auth.updateUser({
