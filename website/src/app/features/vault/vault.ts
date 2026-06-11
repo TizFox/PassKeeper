@@ -25,7 +25,6 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 	imports: [
 		ReactiveFormsModule,
 		LucidePlus,
-		LucideSearch,
 		Loading,
 		Empty,
 		TextInput,

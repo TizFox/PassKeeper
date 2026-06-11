@@ -6,7 +6,8 @@ import {
 	LucidePizza,
 	LucidePartyPopper,
 	LucideBriefcaseBusiness,
-	LucideAstroid,
+	LucideSmartphone,
+	LucideLaptop,
 } from '@lucide/angular';
 
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -16,6 +17,8 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
 	food: LucidePizza,
 	fun: LucidePartyPopper,
 	work: LucideBriefcaseBusiness,
+	phone: LucideSmartphone,
+	computer: LucideLaptop,
 };
 
 export type Profile = {
