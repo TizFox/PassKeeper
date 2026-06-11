@@ -37,6 +37,12 @@ export type Account = {
 	category_id: string;
 };
 
+export type EncryptedPassword = {
+	encrypted: string;
+	iv: string;
+	tag: string;
+};
+
 export type Category = {
 	id: string;
 	name: string;
