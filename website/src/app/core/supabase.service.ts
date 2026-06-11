@@ -30,14 +30,14 @@ export class SupabaseService {
 	loading = signal<boolean>(true);
 
 	constructor() {
-		this.supabase = createClient(env.supabaseUrl, env.supabaseKey, {
+		this.supabase = createClient(env.supabaseUrl, env.supabaseKey); /* , {
 			auth: {
 				// Ask login every time, to set the masterKey
 				// To not save the masterKey in browser storage (not safe)
 				persistSession: false,
 				autoRefreshToken: false,
 			},
-		});
+		});*/
 
 		if (!isPlatformBrowser(this.platformId)) {
 			return; // SSR

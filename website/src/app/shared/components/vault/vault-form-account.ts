@@ -127,6 +127,34 @@ export class VaultFormAccount {
 	};
 
 	protected generatePassword = (): void => {
-		this.accountForm.get('password')?.reset('aa');
+		const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
+		const NUMBERS = '01234567890';
+		const SYMBOLS = `!#$%&'"()*+,-./:;<=>?@[]^_{|}~`;
+
+		const nLetters = 7;
+		const nNumbers = 5;
+		const nSymbols = 3;
+
+		let newPassword = '';
+
+		for (let i = 0; i < nLetters; i++) {
+			let letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
+			newPassword += Math.random() > 0.7 ? letter.toUpperCase() : letter;
+		}
+		for (let i = 0; i < nNumbers; i++) {
+			newPassword += NUMBERS[Math.floor(Math.random() * NUMBERS.length)];
+		}
+		for (let i = 0; i < nSymbols; i++) {
+			newPassword += SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+		}
+
+		newPassword = newPassword
+			.split('')
+			.map((value) => ({ value, sort: Math.random() }))
+			.sort((a, b) => a.sort - b.sort)
+			.map(({ value }) => value)
+			.join('');
+
+		this.accountForm.get('password')?.reset(newPassword);
 	};
 }

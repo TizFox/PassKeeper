@@ -72,7 +72,7 @@ export class VaultFormCategory {
 	}
 
 	// Get dynamic Account object with Form Values
-	private readonly categoryFormValue = toSignal(this.categoryForm.valueChanges, {
+	protected readonly categoryFormValue = toSignal(this.categoryForm.valueChanges, {
 		initialValue: this.categoryForm.getRawValue(),
 	});
 	protected readonly currentCategory = computed<Category>(() => {

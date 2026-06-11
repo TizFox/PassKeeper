@@ -41,12 +41,20 @@
 
 			<app-select-input label="Icon" [optionList]="possibleIcons" formControlName="icon" />
 
-			<div class="flex justify-between items-end">
-				<input
-					type="color"
-					formControlName="color"
-					class="w-2/3"
-				/>
+			<div class="flex gap-3">
+				<div class="relative flex-1 input-h
+					border-2 base-rounded border-pla
+					color-transition
+					has-[:focus]:border-cta"
+					[style.background-color]="categoryFormValue().color"
+				>
+					<input
+						type="color"
+						formControlName="color"
+						class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+					/>
+				</div>
+
 
 				<app-button type="submit">
 					{{ "Save" }}
