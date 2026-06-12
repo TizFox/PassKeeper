@@ -14,10 +14,10 @@ import { RouterLink } from '@angular/router';
 export class Button {
 	type = input<string>('button');
 	onClick = output<Event>();
-	extra = input<string>('');
-	p = input<string>('px-3');
 	disabled = input<boolean>(false);
 	href = input<string | null>(null);
+	extra = input<string>('');
+	p = input<string>('px-3');
 
 	protected handleClick = (e: Event) => {
 		if (this.onClick) {

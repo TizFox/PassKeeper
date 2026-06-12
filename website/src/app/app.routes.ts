@@ -1,17 +1,17 @@
 import { Route, Routes } from '@angular/router';
 
-import { Home } from './features/home/home';
-import { Auth } from './features/auth/auth';
-import { Vault } from './features/vault/vault';
-import { Profile } from './features/profile/profile';
-import { NotFound } from './features/not-found/not-found';
+import { HomePage } from './features/home/home';
+import { AuthPage } from './features/auth/auth';
+import { VaultPage } from './features/vault/vault';
+import { ProfilePage } from './features/profile/profile';
+import { NotFoundPage } from './features/not-found/not-found';
 
 export const routes: Routes = [
-	{ path: '', component: Home },
-	{ path: 'auth', component: Auth },
-	{ path: 'vault', component: Vault },
-	{ path: 'profile', component: Profile },
-	{ path: '**', component: NotFound },
+	{ path: '', component: HomePage },
+	{ path: 'auth', component: AuthPage },
+	{ path: 'vault', component: VaultPage },
+	{ path: 'profile', component: ProfilePage },
+	{ path: '**', component: NotFoundPage },
 ];
 
 export type ValidRoute = { name: string; route: Route; show: boolean };

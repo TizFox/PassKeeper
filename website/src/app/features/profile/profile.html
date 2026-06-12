@@ -1,13 +1,13 @@
-@if (supabase.loading()) {
+@if (setup()) {
 	<app-loading msg="Checking your Account..." />
 } @else {
 	<app-container extra="w-min mx-auto gap-5">
 		<div class="w-full flex gap-3">
 			<app-avatar />
 			<div class="flex flex-col">
-				<h2 class="font-semibold text-cta">{{ supabase.profile().username }}</h2>
-				<span>{{ supabase.profile().email }} </span>
-				{{ supabase.profile().createdAt }}
+				<h2 class="font-semibold text-cta">{{ profile().username }}</h2>
+				<span>{{ profile().email }} </span>
+				{{ profile().createdAt }}
 			</div>
 		</div>
 
@@ -19,16 +19,16 @@
 			<app-text-input placeholder="New Username" formControlName="newUsername" />
 			<app-text-input type="password" placeholder="New Password" notObscured formControlName="newPassword" />
 
-			<app-button type="submit" extra="w-full">
+			<app-button type="submit" [disabled]="loading()" extra="w-full">
 				{{loading() ? 'Loading...' : 'UPDATE'}}
 			</app-button>
 
 			<div class="w-full flex gap-3">
-				<app-button	(onClick)="handler($event, 'logout')" extra="w-full">
+				<app-button	(onClick)="handler($event, 'logout')" [disabled]="loading()" extra="w-full">
 					{{loading() ? 'Loading...' : 'LOGOUT'}}
 				</app-button>
 
-				<app-button (onClick)="handler($event, 'delete')" extra="w-full">
+				<app-button (onClick)="handler($event, 'delete')" [disabled]="loading()" extra="w-full">
 					{{loading() ? 'Loading...' : 'DELETE'}}
 				</app-button>
 			</div>

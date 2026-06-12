@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 
 import { SupabaseService } from '$/core/supabase.service';
+import { User } from '@supabase/supabase-js';
 
 import { Loading } from '$/shared/components/status/loading';
 
@@ -15,5 +16,8 @@ import { Button } from '$/shared/components/inputs/button';
 	imports: [Loading, Logo, Avatar, Button],
 })
 export class Header {
-	protected supabase: SupabaseService = inject(SupabaseService);
+	private supabase: SupabaseService = inject(SupabaseService);
+
+	protected setup = computed<boolean>(() => this.supabase.loading());
+	protected user = computed<User | null>(() => this.supabase.user);
 }

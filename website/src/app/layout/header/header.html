@@ -4,10 +4,10 @@
 
 		<div class="flex-grow"></div>
 
-		@if (supabase.loading()) {
+		@if (setup()) {
 			<app-loading w="w-min" />
 		} @else {
-			@if (supabase.user) {
+			@if (user()) {
 				<app-button href="/vault">
 					VAULT
 				</app-button>

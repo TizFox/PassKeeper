@@ -42,7 +42,7 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 	],
 })
 export class VaultFormAccount {
-	protected supabase: SupabaseService = inject(SupabaseService);
+	private supabase: SupabaseService = inject(SupabaseService);
 
 	type = input.required<FormType>();
 	modify = output<void>();
@@ -112,7 +112,7 @@ export class VaultFormAccount {
 			return;
 		}
 
-		console.log(this.type(), ' - FORM SUBMITTED:', this.currentAccount());
+		console.log(this.type(), '- FORM SUBMITTED:', this.currentAccount());
 
 		switch (this.type()) {
 			case 'new-account':

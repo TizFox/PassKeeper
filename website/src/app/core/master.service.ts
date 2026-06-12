@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { EncryptedPassword } from './types';
+import { Account, SupabaseAccount, EncryptedPassword } from './types';
 @Injectable({
 	providedIn: 'root',
 })
@@ -28,20 +28,17 @@ export class MasterService {
 			false,
 			['encrypt', 'decrypt'],
 		);
-
-		console.log('T1zi4N02004!1!');
-		const data = await this.encript('T1zi4N02004!1!');
-		console.log(data.encrypted, data.iv, data.tag);
-		const pass = await this.decript(data);
-		console.log(pass);
 	};
 	clearPassword = (): void => {
 		this._key = null;
 	};
 
-	encript = async (password: string): Promise<EncryptedPassword> => {
+	private encript = async (password: string): Promise<EncryptedPassword> => {
 		if (!this._key) {
 			throw Error('No Key');
+		}
+		if (password === '') {
+			return { password: '', iv: '', tag: '' } as EncryptedPassword;
 		}
 
 		const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -55,17 +52,20 @@ export class MasterService {
 		const encPass = full.slice(0, -16);
 		const tag = full.slice(-16);
 		return {
-			encrypted: btoa(String.fromCharCode(...encPass)),
+			password: btoa(String.fromCharCode(...encPass)),
 			iv: btoa(String.fromCharCode(...iv)),
 			tag: btoa(String.fromCharCode(...tag)),
 		} as EncryptedPassword;
 	};
-	decript = async (password: EncryptedPassword): Promise<string> => {
+	private decript = async (password: EncryptedPassword): Promise<string> => {
 		if (!this._key) {
 			throw Error('No Key');
 		}
+		if (password.password === '' && password.iv === '' && password.tag === '') {
+			return '';
+		}
 
-		const encPass = Uint8Array.from(atob(password.encrypted), (c) => c.charCodeAt(0));
+		const encPass = Uint8Array.from(atob(password.password), (c) => c.charCodeAt(0));
 		const iv = Uint8Array.from(atob(password.iv), (c) => c.charCodeAt(0));
 		const tag = Uint8Array.from(atob(password.tag), (c) => c.charCodeAt(0));
 
@@ -76,5 +76,28 @@ export class MasterService {
 		const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, this._key, full);
 
 		return new TextDecoder().decode(decrypted);
+	};
+
+	supabaseToAccount = async (supAcc: SupabaseAccount): Promise<Account> => {
+		const { password, iv, tag, ...partialAcc } = supAcc;
+		const decPass: string = await this.decript({
+			password,
+			iv,
+			tag,
+		} as EncryptedPassword);
+
+		return {
+			...partialAcc,
+			password: decPass,
+		} as Account;
+	};
+	accountToSupabase = async (acc: Account): Promise<SupabaseAccount> => {
+		const { password, ...partialAcc } = acc;
+		const encPass: EncryptedPassword = await this.encript(password ?? '');
+
+		return {
+			...partialAcc,
+			...encPass,
+		} as SupabaseAccount;
 	};
 }

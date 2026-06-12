@@ -63,10 +63,15 @@
 		</form>
 	} @else {
 		<div class="grid grid-cols-4 gap-y-2">
-			<span>Name:</span> <app-value>{{ currentAccount().name }}</app-value>
-			<span>Username:</span> <app-value>{{ currentAccount().username }}</app-value>
-			<span>Password:</span> <app-value>{{ currentAccount().password }}</app-value>
-			<span>Notes:</span> <app-value>{{ currentAccount().notes }}</app-value>
+			<div class="flex items-center">Name:</div> <app-value>{{ currentAccount().name }}</app-value>
+			<div class="flex items-center">Username:</div> <app-value>{{ currentAccount().username }}</app-value>
+			<div class="flex items-center">Email:</div> <app-value>{{ currentAccount().email }}</app-value>
+			<div class="flex items-center">Password:</div> <app-value>{{ currentAccount().password }}</app-value>
+			<div class="col-span-4">
+				<span>Notes:</span>
+				<app-value multiline>{{ currentAccount().notes }}</app-value>
+			</div>
+
 			<div class="col-span-4 flex justify-center items-center">
 				<app-vault-category [category]="currentCategory()" />
 			</div>

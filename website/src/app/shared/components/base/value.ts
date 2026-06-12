@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, booleanAttribute } from '@angular/core';
 
 @Component({
 	selector: 'app-value',
@@ -11,4 +11,5 @@ import { Component, input } from '@angular/core';
 })
 export class Value {
 	bgColor = input<string>('');
+	multiline = input(false, { transform: booleanAttribute });
 }

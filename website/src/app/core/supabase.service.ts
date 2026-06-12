@@ -12,8 +12,7 @@ import {
 
 import { env } from 'src/env';
 import { MasterService } from '$/core/master.service';
-import { Profile, Account, Category } from '$/core/types';
-import { PassThrough } from 'stream';
+import { Profile, Account, SupabaseAccount, Category } from '$/core/types';
 
 @Injectable({
 	providedIn: 'root',
@@ -31,14 +30,14 @@ export class SupabaseService {
 	loading = signal<boolean>(true);
 
 	constructor() {
-		this.supabase = createClient(env.supabaseUrl, env.supabaseKey); /* , {
+		this.supabase = createClient(env.supabaseUrl, env.supabaseKey, {
 			auth: {
 				// Ask login every time, to set the masterKey
 				// To not save the masterKey in browser storage (not safe)
 				persistSession: false,
 				autoRefreshToken: false,
 			},
-		});*/
+		});
 
 		if (!isPlatformBrowser(this.platformId)) {
 			return; // SSR
@@ -58,16 +57,30 @@ export class SupabaseService {
 			},
 		);
 	}
-	checkAuth = async (callback?: () => unknown) => {
+	checkAuth = async ({
+		success,
+		failure = () => this.router.navigate(['/auth']),
+		loadAll = false,
+	}: {
+		success?: () => unknown;
+		failure?: () => unknown;
+		loadAll?: boolean;
+	}) => {
 		let check = effect(async () => {
 			if (!this.loading()) {
 				if (!this._user()) {
-					this.router.navigate(['/auth']);
+					await failure();
 				} else {
-					await this.loadData();
-					if (callback) {
-						await callback();
+					this.loading.set(true);
+					await this.loadProfile();
+					if (loadAll) {
+						await this.loadAccounts();
+						await this.loadCategories();
 					}
+					if (success) {
+						success();
+					}
+					this.loading.set(false);
 				}
 				check.destroy();
 			}
@@ -75,10 +88,10 @@ export class SupabaseService {
 	};
 
 	private _profile = signal<Profile>({ email: '', createdAt: '', username: '' });
-	readonly profile = this._profile.asReadonly();
 	private _accounts = signal<Account[]>([]);
 	private _categories = signal<Category[]>([]);
 
+	readonly profile = this._profile.asReadonly();
 	readonly accounts = computed<Record<string, Account>>(() => {
 		let obj: Record<string, Account> = {};
 		this._accounts().forEach((acc) => (obj[acc.id] = acc));
@@ -92,27 +105,17 @@ export class SupabaseService {
 	});
 	readonly categoriesIds = computed<string[]>(() => this._categories().map((cat) => cat.id));
 
-	login = async (
-		email: string,
-		password: string,
-	): Promise<{ user: User | null; err: string | null }> => {
-		const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+	login = async (email: string, password: string): Promise<string | null> => {
+		const { error } = await this.supabase.auth.signInWithPassword({ email, password });
 
 		if (!error) {
 			this.master.setPassword(password, this._user()?.id!);
 		}
 
-		return {
-			user: data.user,
-			err: error?.message ?? null,
-		};
+		return error?.message ?? null;
 	};
-	signup = async (
-		username: string,
-		email: string,
-		password: string,
-	): Promise<{ user: User | null; err: string | null }> => {
-		const { data, error } = await this.supabase.auth.signUp({
+	signup = async (username: string, email: string, password: string): Promise<string | null> => {
+		const { error } = await this.supabase.auth.signUp({
 			email,
 			password,
 			options: { data: { username } },
@@ -122,91 +125,31 @@ export class SupabaseService {
 			this.master.setPassword(password, this._user()?.id!);
 		}
 
-		return {
-			user: data.user,
-			err: error?.message ?? null,
-		};
+		return error?.message ?? null;
 	};
-	logout = async (): Promise<{ err: string | null }> => {
+	logout = async (): Promise<string | null> => {
 		const { error } = await this.supabase.auth.signOut();
 
 		if (!error) {
 			this.master.clearPassword();
 		}
 
-		return {
-			err: error?.message ?? null,
-		};
+		return error?.message ?? null;
 	};
-
-	getAccounts = async (): Promise<Account[]> => {
-		let { data, error } = await this.supabase.from('accounts').select('*');
-		if (error || !data) {
-			console.log(error);
-			return [];
-		}
-
-		let accounts = data.map((acc) => {
-			return {
-				id: acc.id,
-				name: acc.name,
-				username: acc.username,
-				password: acc.password,
-				notes: acc.notes,
-				category_id: acc.category_id,
-			} as Account;
-		});
-
-		return accounts;
-	};
-	getCategories = async (): Promise<Category[]> => {
-		let { data, error } = await this.supabase.from('categories').select('*');
-		if (error || !data) {
-			console.log(error);
-			return [];
-		}
-
-		let categories = data.map((cat) => {
-			return {
-				id: cat.id,
-				name: cat.name,
-				color: cat.color,
-				icon: cat.icon,
-			} as Category;
-		});
-
-		return categories;
-	};
-
-	loadData = async () => {
-		this.loading.set(true);
-
-		this._profile.set({
-			email: this._user()?.email!,
-			createdAt: formatDate(this._user()?.created_at!),
-			username: this._user()?.user_metadata['username'],
-		});
-
-		this._accounts.set(await this.getAccounts());
-		this._categories.set(await this.getCategories());
-
-		this.loading.set(false);
-	};
-
 	updateProfile = async ({
 		newUsername,
 		newPassword,
 	}: {
 		newUsername: string | null;
 		newPassword: string | null;
-	}): Promise<{ err: string | null }> => {
+	}): Promise<string | null> => {
 		if (newUsername) {
 			const { error } = await this.supabase.auth.updateUser({
 				data: { username: newUsername },
 			});
 
 			if (error) {
-				return { err: error.message };
+				return error.message;
 			}
 			this._profile.update((old) => ({ ...old, username: newUsername }) as Profile);
 		}
@@ -216,17 +159,60 @@ export class SupabaseService {
 			});
 
 			if (error) {
-				return { err: error.message };
+				return error.message;
 			}
 		}
 
-		return { err: null };
+		return null;
+	};
+
+	private getAccounts = async (): Promise<Account[]> => {
+		let {
+			data,
+			error,
+		}: {
+			data: SupabaseAccount[] | null;
+			error: any;
+		} = await this.supabase.from('accounts').select('*');
+		if (error || !data) {
+			console.log(error);
+			return [];
+		}
+
+		let accounts = await Promise.all(
+			data.map(async (supAcc) => await this.master.supabaseToAccount(supAcc)),
+		);
+
+		return accounts;
+	};
+	private getCategories = async (): Promise<Category[]> => {
+		let { data, error }: { data: Category[] | null; error: any } = await this.supabase
+			.from('categories')
+			.select('*');
+		if (error || !data) {
+			console.log(error);
+			return [];
+		}
+
+		return data;
+	};
+
+	private loadProfile = async () => {
+		this._profile.set({
+			email: this._user()?.email!,
+			createdAt: formatDate(this._user()?.created_at!),
+			username: this._user()?.user_metadata['username'],
+		});
+	};
+	private loadAccounts = async () => {
+		this._accounts.set(await this.getAccounts());
+	};
+	private loadCategories = async () => {
+		this._categories.set(await this.getCategories());
 	};
 
 	newAccount = async (acc: Account) => {
-		const { id, ...insertAcc } = acc;
-
-		console.log(insertAcc);
+		const { id, ...insertAcc } = await this.master.accountToSupabase(acc);
 
 		const { data, error } = await this.supabase
 			.from('accounts')
@@ -245,17 +231,19 @@ export class SupabaseService {
 		this._accounts.update((old) => [...old, acc]);
 	};
 	modAccount = async (acc: Account) => {
+		const updateAcc = await this.master.accountToSupabase(acc);
+
 		const { error } = await this.supabase
 			.from('accounts')
-			.update(acc)
-			.eq('id', acc.id)
+			.update(updateAcc)
+			.eq('id', updateAcc.id)
 			.eq('user_id', this._user()?.id!);
 		if (error) {
 			console.log(error.message);
 			return;
 		}
 
-		this._accounts.update((old) => old.map((oldAcc) => (oldAcc.id === acc.id ? acc : oldAcc)));
+		this._accounts.update((old) => old.map((oldAcc) => (acc.id === oldAcc.id ? acc : oldAcc)));
 	};
 	delAccount = async (accId: string) => {
 		const { error } = await this.supabase
@@ -268,7 +256,7 @@ export class SupabaseService {
 			return;
 		}
 
-		this._accounts.update((old) => old.filter((oldAcc) => oldAcc.id !== accId));
+		this._accounts.update((old) => old.filter((oldAcc) => accId !== oldAcc.id));
 	};
 
 	newCategory = async (cat: Category) => {

@@ -1,15 +1,6 @@
 <div [class]="extra() + ' relative flex'">
-	<div
-		class="absolute left-0 top-1/2 -translate-y-[50%]
-		text-pla color-transition
-		peer-focus:text-cta
-		peer-user-invalid:text-err"
-	>
-		<svg [lucideIcon]="icon()"></svg>
-	</div>
-
 	<input
-		[type]="type() === 'search' ? 'text' : type() !== 'password' ? type() : (obscured() ? type() : 'text')"
+		[type]="inputType()"
 		[placeholder]="placeholder()"
 		[required]="required()"
 		[disabled]="disabled()"
@@ -25,13 +16,24 @@
 		user-invalid:border-b-err"
 	/>
 
+	<div
+		class="absolute left-0 top-1/2 -translate-y-[50%]
+		text-pla color-transition
+		peer-focus:text-cta
+		peer-user-invalid:text-err"
+	>
+		<svg [lucideIcon]="icon()"></svg>
+	</div>
+
 	@if (type() === "password") {
 		<button
 			type="button"
 			(mousedown)="$event.preventDefault()"
 			(click)="toggleObscured()"
 			class="absolute right-0 top-1/2 -translate-y-[50%]
-			text-pla cursor-pointer"
+			text-pla cursor-pointer color-transition
+			peer-focus:text-cta
+			peer-user-invalid:text-err"
 		>
 			<svg [lucideIcon]="passIcon()"></svg>
 		</button>

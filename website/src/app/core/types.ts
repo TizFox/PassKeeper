@@ -38,9 +38,21 @@ export type Account = {
 };
 
 export type EncryptedPassword = {
-	encrypted: string;
+	password: string;
 	iv: string;
 	tag: string;
+};
+
+export type SupabaseAccount = {
+	id: string;
+	name: string;
+	username?: string;
+	email?: string;
+	notes?: string;
+	password?: string;
+	iv?: string;
+	tag?: string;
+	category_id: string;
 };
 
 export type Category = {

@@ -1,4 +1,4 @@
-@if (supabase.loading()) {
+@if (setup()) {
 	<app-loading msg="Loading..." />
 } @else {
 	<section class="w-full grid grid-cols-2 auto-row-fr">
@@ -17,7 +17,7 @@
 
 				<div class="w-full flex justify-between items-end">
 					<a (click)="switchForm()" class="link">Create an account?</a>
-					<app-button type="submit">Confirm</app-button>
+					<app-button type="submit" [disabled]="loading()">{{ loading() ? 'Loading...' : 'Confirm' }}</app-button>
 				</div>
 			</form>
 		</app-container>
@@ -37,7 +37,7 @@
 
 				<div class="w-full flex justify-between items-end">
 					<a (click)="switchForm()" class="link">Have an account?</a>
-					<app-button type="submit">Confirm</app-button>
+					<app-button type="submit" [disabled]="loading()">{{ loading() ? 'Loading...' : 'Confirm' }}</app-button>
 				</div>
 			</form>
 		</app-container>

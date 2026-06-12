@@ -1,8 +1,8 @@
-import { Component, inject, signal, computed, linkedSignal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 
-import { LucidePlus, LucideSearch } from '@lucide/angular';
+import { LucidePlus } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { Account, Category, DEFAULT_CATEGORY, FormType } from '$/core/types';
@@ -20,7 +20,7 @@ import { VaultAccount } from '$/shared/components/vault/vault-account';
 import { VaultCategory } from '$/shared/components/vault/vault-category';
 
 @Component({
-	selector: 'app-vault',
+	selector: 'app-vault-page',
 	templateUrl: './vault.html',
 	imports: [
 		ReactiveFormsModule,
@@ -36,16 +36,16 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 		VaultCategory,
 	],
 })
-export class Vault {
-	protected supabase: SupabaseService = inject(SupabaseService);
+export class VaultPage {
+	private supabase: SupabaseService = inject(SupabaseService);
 	constructor() {
-		this.supabase.checkAuth();
+		this.supabase.checkAuth({ loadAll: true });
 	}
-
-	protected selectedAccountId = signal<string | null>(null);
-	protected selectedCategoryId = signal<string | null>(null);
-	protected formType = signal<FormType>('no-form');
-	protected formData = computed<string>(() => this.formType().split('-')[1]); // form | account | category
+	protected setup = computed<boolean>(() => this.supabase.loading());
+	protected accountsIds = computed<string[]>(() => this.supabase.accountsIds());
+	protected accountsMap = computed<Record<string, Account>>(() => this.supabase.accounts());
+	protected categoriesIds = computed<string[]>(() => this.supabase.categoriesIds());
+	protected categoriesMap = computed<Record<string, Category>>(() => this.supabase.categories());
 
 	protected possibleCategories = computed<string[]>(() => [
 		'all',
@@ -76,15 +76,20 @@ export class Vault {
 		}),
 	);
 
+	protected selectedAccountId = signal<string | null>(null);
+	protected selectedCategoryId = signal<string | null>(null);
+	protected formType = signal<FormType>('no-form');
+	protected formData = computed<string>(() => this.formType().split('-')[1]); // form | account | category
+
 	protected newAccountForm = () => {
 		this.formType.set('new-account');
 		this.selectedAccountId.set(null);
 	};
 	protected viewAccountForm = (accId: string) => {
-		console.log(this.supabase.accounts()[accId]);
 		this.formType.set('view-account');
 		this.selectedAccountId.set(accId);
 	};
+
 	protected newCategoryForm = () => {
 		this.formType.set('new-category');
 		this.selectedCategoryId.set(null);

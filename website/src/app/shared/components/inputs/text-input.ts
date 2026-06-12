@@ -53,6 +53,14 @@ export class TextInput implements ControlValueAccessor {
 		this.obscured.update((old) => !old);
 	};
 
+	protected inputType = computed<string>(() => {
+		if (this.type() === 'search' || (this.type() === 'password' && !this.obscured())) {
+			return 'text';
+		}
+
+		return this.type();
+	});
+
 	protected icon = computed<LucideIcon>(() => {
 		switch (this.type()) {
 			case 'search':

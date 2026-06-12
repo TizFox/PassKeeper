@@ -11,19 +11,23 @@ import { TextInput } from '$/shared/components/inputs/text-input';
 import { Button } from '$/shared/components/inputs/button';
 
 @Component({
-	selector: 'app-auth',
+	selector: 'app-auth-page',
 	templateUrl: './auth.html',
 	imports: [ReactiveFormsModule, Loading, Container, TextInput, Button],
 })
-export class Auth {
+export class AuthPage {
 	private router: Router = inject(Router);
-	protected supabase: SupabaseService = inject(SupabaseService);
+	private supabase: SupabaseService = inject(SupabaseService);
 	constructor() {
-		this.supabase.checkAuth(() => {
-			this.router.navigate(['/vault']);
+		this.supabase.checkAuth({
+			success: () => {
+				this.router.navigate(['/vault']);
+			},
+			failure: () => {},
 		});
 	}
 
+	protected setup = computed<boolean>(() => this.supabase.loading());
 	protected loading = signal<boolean>(false);
 	protected isLogin = signal<boolean>(true);
 	protected translateLogin = computed<string>(() =>
@@ -50,9 +54,9 @@ export class Auth {
 	protected handler = async (e: Event, type: string): Promise<void> => {
 		e.preventDefault();
 
-		let success = false;
-
 		this.loading.set(true);
+
+		let success = false;
 		switch (type) {
 			case 'login':
 				success = await this.handleLogin();
@@ -61,6 +65,7 @@ export class Auth {
 				success = await this.handleSignup();
 				break;
 		}
+
 		this.loading.set(false);
 
 		if (success) {
@@ -75,11 +80,11 @@ export class Auth {
 		}
 
 		// Supabase Login
-		let { user, err } = await this.supabase.login(
+		let err = await this.supabase.login(
 			this.loginForm.value.email!,
 			this.loginForm.value.password!,
 		);
-		if (err || !user) {
+		if (err) {
 			console.log(err);
 			return false;
 		}
@@ -92,12 +97,12 @@ export class Auth {
 		}
 
 		// Supabase Signup
-		let { user, err } = await this.supabase.signup(
+		let err = await this.supabase.signup(
 			this.signupForm.value.username!,
 			this.signupForm.value.email!,
 			this.signupForm.value.password!,
 		);
-		if (err || !user) {
+		if (err) {
 			console.log(err);
 			return false;
 		}

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 
 import { SupabaseService } from '$/core/supabase.service';
+import { Profile } from '$/core/types';
 
 import { Loading } from '$/shared/components/status/loading';
 
@@ -12,16 +13,19 @@ import { TextInput } from '$/shared/components/inputs/text-input';
 import { Button } from '$/shared/components/inputs/button';
 
 @Component({
-	selector: 'app-profile',
+	selector: 'app-profile-page',
 	templateUrl: './profile.html',
 	imports: [ReactiveFormsModule, Loading, Container, Avatar, TextInput, Button],
 })
-export class Profile {
+export class ProfilePage {
 	private router: Router = inject(Router);
-	protected supabase: SupabaseService = inject(SupabaseService);
+	private supabase: SupabaseService = inject(SupabaseService);
 	constructor() {
-		this.supabase.checkAuth();
+		this.supabase.checkAuth({});
 	}
+
+	protected setup = computed<boolean>(() => this.supabase.loading());
+	protected profile = computed<Profile>(() => this.supabase.profile());
 
 	protected loading = signal<boolean>(false);
 
@@ -56,7 +60,7 @@ export class Profile {
 			return false;
 		}
 
-		const { err } = await this.supabase.updateProfile({
+		const err = await this.supabase.updateProfile({
 			newUsername: this.profileForm.value.newUsername ?? null,
 			newPassword: this.profileForm.value.newPassword ?? null,
 		});
@@ -70,7 +74,7 @@ export class Profile {
 		return true;
 	};
 	private handleLogout = async (): Promise<boolean> => {
-		let { err } = await this.supabase.logout();
+		let err = await this.supabase.logout();
 		if (err) {
 			console.log(err);
 			return false;
