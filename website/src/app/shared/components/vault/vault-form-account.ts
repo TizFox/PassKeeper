@@ -64,6 +64,12 @@ export class VaultFormAccount {
 		password: new FormControl(''),
 		notes: new FormControl(''),
 		categoryName: new FormControl(DEFAULT_CATEGORY.name),
+		// name: field('', { validators: [required] }),
+		// username: field(''),
+		// email: filed('', { validators: [email] }),
+		// password: field(''),
+		// notes: field(''),
+		// categoryName: field(DEFAULT_CATEGORY.name),
 	});
 
 	// Set Form Values to input Account

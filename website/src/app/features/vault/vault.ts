@@ -55,6 +55,8 @@ export class VaultPage {
 	protected searchForm = new FormGroup({
 		search: new FormControl(''),
 		categoryName: new FormControl('all'),
+		// search: field(''),
+		// categoryName: field('all'),
 	});
 	private readonly searchFormValue = toSignal(this.searchForm.valueChanges, {
 		initialValue: this.searchForm.getRawValue(),

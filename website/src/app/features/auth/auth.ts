@@ -44,11 +44,16 @@ export class AuthPage {
 	protected loginForm = new FormGroup({
 		email: new FormControl('', [Validators.required, Validators.email]),
 		password: new FormControl('', [Validators.required]),
+		//email: field('', { validators: [required, email] }),
+		//password: field('', { validators: [required] }),
 	});
 	protected signupForm = new FormGroup({
 		username: new FormControl('', [Validators.required]),
 		email: new FormControl('', [Validators.required, Validators.email]),
 		password: new FormControl('', [Validators.required]),
+		//username: field('', { validators: [required] }),
+		//email: field('', { validators: [required, email] }),
+		//password: field('', { validators: [required] }),
 	});
 
 	protected handler = async (e: Event, type: string): Promise<void> => {
@@ -80,7 +85,7 @@ export class AuthPage {
 		}
 
 		// Supabase Login
-		let err = await this.supabase.login(
+		const err = await this.supabase.login(
 			this.loginForm.value.email!,
 			this.loginForm.value.password!,
 		);
@@ -97,7 +102,7 @@ export class AuthPage {
 		}
 
 		// Supabase Signup
-		let err = await this.supabase.signup(
+		const err = await this.supabase.signup(
 			this.signupForm.value.username!,
 			this.signupForm.value.email!,
 			this.signupForm.value.password!,

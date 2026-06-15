@@ -32,6 +32,8 @@ export class ProfilePage {
 	protected profileForm = new FormGroup({
 		newUsername: new FormControl(''),
 		newPassword: new FormControl(''),
+		// newUsername: field(''),
+		// newPassword: field(''),
 	});
 
 	protected handler = async (e: Event, type: string): Promise<void> => {
