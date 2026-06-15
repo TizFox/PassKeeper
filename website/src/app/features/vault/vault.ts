@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { FormRoot, FormField, form } from '@angular/forms/signals';
 
 import { LucidePlus } from '@lucide/angular';
@@ -28,7 +28,6 @@ interface SearchData {
 @Component({
 	selector: 'app-vault-page',
 	templateUrl: './vault.html',
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [
 		FormRoot,
 		FormField,

@@ -1,9 +1,8 @@
-import { Component, input, booleanAttribute, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, booleanAttribute } from '@angular/core';
 
 @Component({
 	selector: 'app-container',
 	templateUrl: './container.html',
-	changeDetection: ChangeDetectionStrategy.Eager,
 	styles: `
 		:host {
 			display: contents;

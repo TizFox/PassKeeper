@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -9,7 +9,6 @@ import { RouterLink } from '@angular/router';
 			display: contents;
 		}
 	`,
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [RouterLink],
 })
 export class Button {

@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, input, ChangeDetectionStrategy } from '@angular/core';
+import { booleanAttribute, Component, input } from '@angular/core';
 
 import { LucideFrown } from '@lucide/angular';
 
@@ -10,7 +10,6 @@ import { LucideFrown } from '@lucide/angular';
 			display: contents;
 		}
 	`,
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [LucideFrown],
 })
 export class Empty {

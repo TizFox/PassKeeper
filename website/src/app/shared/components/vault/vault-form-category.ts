@@ -1,13 +1,4 @@
-import {
-	Component,
-	inject,
-	input,
-	output,
-	signal,
-	computed,
-	effect,
-	ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { FormRoot, FormField, form, required } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
@@ -37,7 +28,6 @@ interface CategoryData {
 			display: contents;
 		}
 	`,
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [
 		FormRoot,
 		FormField,

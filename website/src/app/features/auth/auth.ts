@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormRoot, FormField, form, required, email, minLength } from '@angular/forms/signals';
 
@@ -25,7 +25,6 @@ type AuthActions = 'login' | 'signup';
 @Component({
 	selector: 'app-auth-page',
 	templateUrl: './auth.html',
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [FormRoot, FormField, Loading, Container, TextInput, Button],
 })
 export class AuthPage {

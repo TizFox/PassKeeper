@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormRoot, FormField, form, minLength } from '@angular/forms/signals';
 
@@ -22,7 +22,6 @@ type ProfileActions = 'update' | 'logout' | 'delete';
 @Component({
 	selector: 'app-profile-page',
 	templateUrl: './profile.html',
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [FormRoot, FormField, Loading, Container, Avatar, TextInput, Button],
 })
 export class ProfilePage {

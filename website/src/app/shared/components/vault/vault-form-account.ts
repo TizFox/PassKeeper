@@ -1,13 +1,4 @@
-import {
-	Component,
-	inject,
-	input,
-	output,
-	signal,
-	computed,
-	effect,
-	ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { FormRoot, FormField, form, required, email } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
@@ -42,7 +33,6 @@ interface AccountData {
 			display: contents;
 		}
 	`,
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [
 		FormRoot,
 		FormField,

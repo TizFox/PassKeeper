@@ -1,10 +1,4 @@
-import {
-	Component,
-	input,
-	booleanAttribute,
-	computed,
-	ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, input, booleanAttribute, computed } from '@angular/core';
 
 import { LucideDynamicIcon, LucideIcon } from '@lucide/angular';
 
@@ -18,7 +12,6 @@ import { Category, CATEGORY_ICONS } from '$/core/types';
 			display: contents;
 		}
 	`,
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [LucideDynamicIcon],
 })
 export class CategoryIcon {

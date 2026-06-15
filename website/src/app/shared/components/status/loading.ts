@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 import { LucideLoaderCircle } from '@lucide/angular';
 
@@ -10,7 +10,6 @@ import { LucideLoaderCircle } from '@lucide/angular';
 			display: contents;
 		}
 	`,
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [LucideLoaderCircle],
 })
 export class Loading {

@@ -1,11 +1,4 @@
-import {
-	Component,
-	forwardRef,
-	input,
-	signal,
-	effect,
-	ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, forwardRef, input, signal, effect } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
@@ -25,7 +18,6 @@ import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
 			multi: true,
 		},
 	],
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [DashToTitlePipe],
 })
 export class SelectInput implements ControlValueAccessor {

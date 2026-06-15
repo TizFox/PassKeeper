@@ -1,4 +1,4 @@
-import { Component, input, booleanAttribute, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, booleanAttribute } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { LucideLock } from '@lucide/angular';
@@ -11,7 +11,6 @@ import { LucideLock } from '@lucide/angular';
 			display: contents;
 		}
 	`,
-	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [RouterLink, LucideLock],
 })
 export class Logo {
