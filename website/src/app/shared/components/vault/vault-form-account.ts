@@ -3,12 +3,12 @@ import {
 	inject,
 	input,
 	output,
+	signal,
 	computed,
 	effect,
 	ChangeDetectionStrategy,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormRoot, FormField, form, required, email } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
 
@@ -25,6 +25,15 @@ import { Button } from '$/shared/components/inputs/button';
 import { Value } from '$/shared/components/base/value';
 import { VaultCategory } from '$/shared/components/vault/vault-category';
 
+interface AccountData {
+	name: string;
+	username: string;
+	email: string;
+	password: string;
+	notes: string;
+	categoryName: string;
+}
+
 @Component({
 	selector: 'app-vault-form-account',
 	templateUrl: './vault-form-account.html',
@@ -35,7 +44,8 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 	`,
 	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [
-		ReactiveFormsModule,
+		FormRoot,
+		FormField,
 		LucidePencil,
 		LucideTrash2,
 		LucideX,
@@ -66,26 +76,25 @@ export class VaultFormAccount {
 		...Object.values(this.supabase.categories()).map((cat: Category) => cat.name),
 	]);
 
-	protected accountForm = new FormGroup({
-		name: new FormControl('', [Validators.required]),
-		username: new FormControl(''),
-		email: new FormControl('', [Validators.email]),
-		password: new FormControl(''),
-		notes: new FormControl(''),
-		categoryName: new FormControl(DEFAULT_CATEGORY.name),
-		// name: field('', { validators: [required] }),
-		// username: field(''),
-		// email: filed('', { validators: [email] }),
-		// password: field(''),
-		// notes: field(''),
-		// categoryName: field(DEFAULT_CATEGORY.name),
+	private accountModel = signal<AccountData>({
+		name: '',
+		username: '',
+		email: '',
+		password: '',
+		notes: '',
+		categoryName: DEFAULT_CATEGORY.name,
+	});
+	protected accountForm = form(this.accountModel, (schema) => {
+		required(schema.name);
+		email(schema.email);
+		required(schema.categoryName);
 	});
 
 	// Set Form Values to input Account
 	constructor() {
 		effect(() => {
 			if (this.type() === 'view-account') {
-				this.accountForm.patchValue({
+				this.accountModel.set({
 					name: this.account()?.name ?? '',
 					username: this.account()?.username ?? '',
 					email: this.account()?.email ?? '',
@@ -99,20 +108,16 @@ export class VaultFormAccount {
 		});
 	}
 
-	// Get dynamic Account object with Form Values
-	private readonly accountFormValue = toSignal(this.accountForm.valueChanges, {
-		initialValue: this.accountForm.getRawValue(),
-	});
 	protected readonly currentAccount = computed<Account>(() => {
 		return {
 			id: this.accountId() ?? this.account()?.id,
-			name: this.accountFormValue().name,
-			username: this.accountFormValue().username,
-			email: this.accountFormValue().email,
-			password: this.accountFormValue().password,
-			notes: this.accountFormValue().notes,
+			name: this.accountModel().name,
+			username: this.accountModel().username,
+			email: this.accountModel().email,
+			password: this.accountModel().password,
+			notes: this.accountModel().notes,
 			category_id: [DEFAULT_CATEGORY, ...Object.values(this.supabase.categories())].find(
-				(cat) => cat.name === this.accountFormValue().categoryName,
+				(cat) => cat.name === this.accountModel().categoryName,
 			)?.id,
 		} as Account;
 	});
@@ -123,7 +128,7 @@ export class VaultFormAccount {
 	protected formSubmit = async (e: Event): Promise<void> => {
 		e.preventDefault();
 
-		if (!this.accountForm.valid) {
+		if (!this.accountForm().valid()) {
 			return;
 		}
 
@@ -170,6 +175,6 @@ export class VaultFormAccount {
 			.map(({ value }) => value)
 			.join('');
 
-		this.accountForm.get('password')?.reset(newPassword);
+		this.accountModel.update((old) => ({ ...old, password: newPassword }));
 	};
 }

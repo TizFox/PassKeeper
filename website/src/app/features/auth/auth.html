@@ -5,14 +5,14 @@
 		<!-- LOGIN -->
 		<app-container [extra]="translateLogin()">
 			<form
-				[formGroup]="loginForm"
-				(ngSubmit)="handler($event, 'login')"
+				[formRoot]="loginForm"
+				(submit)="handler($event, 'login')"
 				class="flex flex-col gap-3"
 			>
 				<h1 class="w-full text-center">LOGIN</h1>
 
-				<app-text-input type="email" placeholder="Email" required formControlName="email" />
-				<app-text-input type="password" placeholder="Password" required formControlName="password" />
+				<app-text-input type="email" placeholder="Email" required [formField]="loginForm.email" />
+				<app-text-input type="password" placeholder="Password" required [formField]="loginForm.password" />
 				<div class="invisible"><app-text-input /></div>
 
 				<div class="w-full flex justify-between items-end">
@@ -25,15 +25,15 @@
 		<!-- SIGNUP -->
 		<app-container [extra]="translateSignup()">
 			<form
-				[formGroup]="signupForm"
-				(ngSubmit)="handler($event, 'signup')"
+				[formRoot]="signupForm"
+				(submit)="handler($event, 'signup')"
 				class="flex flex-col gap-3"
 			>
 				<h1 class="w-full text-center">SIGNUP</h1>
 
-				<app-text-input placeholder="Username" required formControlName="username" />
-				<app-text-input type="email" placeholder="Email" required formControlName="email" />
-				<app-text-input type="password" placeholder="Password" required formControlName="password" />
+				<app-text-input placeholder="Username" required [formField]="signupForm.username" />
+				<app-text-input type="email" placeholder="Email" required [formField]="signupForm.email" />
+				<app-text-input type="password" placeholder="Password" required [formField]="signupForm.password" />
 
 				<div class="w-full flex justify-between items-end">
 					<a (click)="switchForm()" class="link">Have an account?</a>

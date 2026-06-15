@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormRoot, FormField, form, required, email, minLength } from '@angular/forms/signals';
 
 import { SupabaseService } from '$/core/supabase.service';
 
@@ -10,11 +10,23 @@ import { Container } from '$/shared/components/base/container';
 import { TextInput } from '$/shared/components/inputs/text-input';
 import { Button } from '$/shared/components/inputs/button';
 
+interface LoginData {
+	email: string;
+	password: string;
+}
+interface SignupData {
+	username: string;
+	email: string;
+	password: string;
+}
+
+type AuthActions = 'login' | 'signup';
+
 @Component({
 	selector: 'app-auth-page',
 	templateUrl: './auth.html',
 	changeDetection: ChangeDetectionStrategy.Eager,
-	imports: [ReactiveFormsModule, Loading, Container, TextInput, Button],
+	imports: [FormRoot, FormField, Loading, Container, TextInput, Button],
 })
 export class AuthPage {
 	private router: Router = inject(Router);
@@ -42,22 +54,24 @@ export class AuthPage {
 		this.isLogin.update((b: boolean) => !b);
 	};
 
-	protected loginForm = new FormGroup({
-		email: new FormControl('', [Validators.required, Validators.email]),
-		password: new FormControl('', [Validators.required]),
-		//email: field('', { validators: [required, email] }),
-		//password: field('', { validators: [required] }),
-	});
-	protected signupForm = new FormGroup({
-		username: new FormControl('', [Validators.required]),
-		email: new FormControl('', [Validators.required, Validators.email]),
-		password: new FormControl('', [Validators.required]),
-		//username: field('', { validators: [required] }),
-		//email: field('', { validators: [required, email] }),
-		//password: field('', { validators: [required] }),
+	private loginModel = signal<LoginData>({ email: '', password: '' });
+	protected loginForm = form(this.loginModel, (schema) => {
+		required(schema.email);
+		email(schema.email);
+		required(schema.password);
+		minLength(schema.password, 6);
 	});
 
-	protected handler = async (e: Event, type: string): Promise<void> => {
+	private signupModel = signal<SignupData>({ username: '', email: '', password: '' });
+	protected signupForm = form(this.signupModel, (schema) => {
+		required(schema.username);
+		required(schema.email);
+		email(schema.email);
+		required(schema.password);
+		minLength(schema.password, 6);
+	});
+
+	protected handler = async (e: Event, type: AuthActions): Promise<void> => {
 		e.preventDefault();
 
 		this.loading.set(true);
@@ -80,16 +94,14 @@ export class AuthPage {
 	};
 
 	private handleLogin = async (): Promise<boolean> => {
-		if (!this.loginForm.valid) {
+		if (!this.loginForm().valid()) {
 			console.log('INVALID LOGIN');
 			return false;
 		}
 
 		// Supabase Login
-		const err = await this.supabase.login(
-			this.loginForm.value.email!,
-			this.loginForm.value.password!,
-		);
+		const err = await this.supabase.login(this.loginModel().email, this.loginModel().password);
+
 		if (err) {
 			console.log(err);
 			return false;
@@ -97,16 +109,16 @@ export class AuthPage {
 		return true;
 	};
 	private handleSignup = async (): Promise<boolean> => {
-		if (!this.signupForm.valid) {
+		if (!this.signupForm().valid()) {
 			console.log('INVALID SIGNUP');
 			return false;
 		}
 
 		// Supabase Signup
 		const err = await this.supabase.signup(
-			this.signupForm.value.username!,
-			this.signupForm.value.email!,
-			this.signupForm.value.password!,
+			this.signupModel().username,
+			this.signupModel().email,
+			this.signupModel().password,
 		);
 		if (err) {
 			console.log(err);

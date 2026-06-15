@@ -3,12 +3,12 @@ import {
 	inject,
 	input,
 	output,
+	signal,
 	computed,
 	effect,
 	ChangeDetectionStrategy,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormRoot, FormField, form, required } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
 
@@ -23,6 +23,12 @@ import { Button } from '$/shared/components/inputs/button';
 import { Value } from '$/shared/components/base/value';
 import { VaultCategory } from '$/shared/components/vault/vault-category';
 
+interface CategoryData {
+	name: string;
+	icon: string;
+	color: string;
+}
+
 @Component({
 	selector: 'app-vault-form-category',
 	templateUrl: './vault-form-category.html',
@@ -33,7 +39,8 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 	`,
 	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [
-		ReactiveFormsModule,
+		FormRoot,
+		FormField,
 		LucidePencil,
 		LucideTrash2,
 		LucideX,
@@ -61,17 +68,22 @@ export class VaultFormCategory {
 
 	protected possibleIcons = Object.keys(CATEGORY_ICONS);
 
-	protected categoryForm = new FormGroup({
-		name: new FormControl('', [Validators.required]),
-		icon: new FormControl('', [Validators.required]),
-		color: new FormControl('#000', [Validators.required]),
+	private categoryModel = signal<CategoryData>({
+		name: '',
+		icon: '',
+		color: '#000',
+	});
+	protected categoryForm = form(this.categoryModel, (schema) => {
+		required(schema.name);
+		required(schema.icon);
+		required(schema.color);
 	});
 
 	// Set Form Values to input Category
 	constructor() {
 		effect(() => {
 			if (this.type() === 'view-category') {
-				this.categoryForm.patchValue({
+				this.categoryModel.set({
 					name: this.category()?.name ?? '',
 					color: this.category()?.color ?? '',
 					icon: this.category()?.icon ?? '',
@@ -80,23 +92,19 @@ export class VaultFormCategory {
 		});
 	}
 
-	// Get dynamic Account object with Form Values
-	protected readonly categoryFormValue = toSignal(this.categoryForm.valueChanges, {
-		initialValue: this.categoryForm.getRawValue(),
-	});
 	protected readonly currentCategory = computed<Category>(() => {
 		return {
 			id: this.categoryId() ?? this.category()?.id,
-			name: this.categoryFormValue().name,
-			icon: this.categoryFormValue().icon,
-			color: this.categoryFormValue().color,
+			name: this.categoryModel().name,
+			icon: this.categoryModel().icon,
+			color: this.categoryModel().color,
 		} as Category;
 	});
 
 	protected formSubmit = async (e: Event): Promise<void> => {
 		e.preventDefault();
 
-		if (!this.categoryForm.valid) {
+		if (!this.categoryForm().valid()) {
 			return;
 		}
 

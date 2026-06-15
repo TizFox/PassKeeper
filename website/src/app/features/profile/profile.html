@@ -11,10 +11,7 @@
 			</div>
 		</div>
 
-		<form
-			(ngSubmit)="handler($event, 'update')"
-			class="w-full flex flex-col gap-3"
-		>
+		<form [formRoot]="profileForm" (submit)="handler('update')" class="w-full flex flex-col gap-3">
 			<app-text-input placeholder="New Username" [formField]="profileForm.newUsername" />
 			<app-text-input type="password" placeholder="New Password" notObscured [formField]="profileForm.newPassword" />
 
@@ -23,11 +20,11 @@
 			</app-button>
 
 			<div class="w-full flex gap-3">
-				<app-button	(onClick)="handler($event, 'logout')" [disabled]="loading()" extra="w-full">
+				<app-button	(onClick)="handler('logout')" [disabled]="loading()" extra="w-full">
 					{{loading() ? 'Loading...' : 'LOGOUT'}}
 				</app-button>
 
-				<app-button (onClick)="handler($event, 'delete')" [disabled]="loading()" extra="w-full">
+				<app-button (onClick)="handler('delete')" [disabled]="loading()" extra="w-full">
 					{{loading() ? 'Loading...' : 'DELETE'}}
 				</app-button>
 			</div>

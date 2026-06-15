@@ -30,12 +30,12 @@
 				</div>
 
 				<form
-					[formGroup]="searchForm"
+					[formRoot]="searchForm"
 					class="w-full p-3 bg-z1 container-rounded base-shadow flex gap-3
 					border-2 border-cta/30"
 				>
-					<app-text-input type="search" placeholder="Search" extra="flex-2" formControlName="search" />
-					<app-select-input [optionList]="possibleCategories()" extra="flex-1" formControlName="categoryName" />
+					<app-text-input type="search" placeholder="Search" extra="flex-2" [formField]="searchForm.search" />
+					<app-select-input [optionList]="possibleCategories()" extra="flex-1" [formField]="searchForm.categoryName" />
 				</form>
 
 				@for (accId of filteredAccountsIds(); track accId) {

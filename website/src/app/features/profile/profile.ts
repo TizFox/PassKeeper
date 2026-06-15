@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormField, form } from '@angular/forms/signals';
+import { FormRoot, FormField, form, minLength } from '@angular/forms/signals';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { Profile } from '$/core/types';
@@ -17,11 +17,13 @@ interface ProfileData {
 	newPassword: string;
 }
 
+type ProfileActions = 'update' | 'logout' | 'delete';
+
 @Component({
 	selector: 'app-profile-page',
 	templateUrl: './profile.html',
 	changeDetection: ChangeDetectionStrategy.Eager,
-	imports: [FormField, Loading, Container, Avatar, TextInput, Button],
+	imports: [FormRoot, FormField, Loading, Container, Avatar, TextInput, Button],
 })
 export class ProfilePage {
 	private router: Router = inject(Router);
@@ -39,29 +41,31 @@ export class ProfilePage {
 		newUsername: '',
 		newPassword: '',
 	});
-	protected profileForm = form(this.profileModel);
+	protected profileForm = form(this.profileModel, (schema) => {
+		minLength(schema.newPassword, 6);
+	});
 
-	protected handler = async (e: Event, type: string): Promise<void> => {
-		e.preventDefault();
-
+	protected handler = async (type: ProfileActions): Promise<void> => {
 		this.loading.set(true);
+
 		switch (type) {
 			case 'update':
-				await this.handleUpdate();
+				this.handleUpdate();
 				break;
 			case 'logout':
-				await this.handleLogout();
+				this.handleLogout();
 				break;
 			case 'delete':
-				await this.handleDeleteAccount();
+				this.handleDeleteAccount();
 				break;
 		}
+
 		this.loading.set(false);
 	};
 
-	private handleUpdate = async (): Promise<boolean> => {
+	private handleUpdate = async (): Promise<void> => {
 		if (this.profileModel().newUsername === '' && this.profileModel().newPassword === '') {
-			return false;
+			return;
 		}
 
 		const err = await this.supabase.updateProfile({
@@ -70,25 +74,22 @@ export class ProfilePage {
 		});
 		if (err) {
 			console.log(err);
-			return false;
+			return;
 		}
 
 		this.profileModel.set({ newUsername: '', newPassword: '' });
-
-		return true;
 	};
-	private handleLogout = async (): Promise<boolean> => {
+	private handleLogout = async (): Promise<void> => {
 		let err = await this.supabase.logout();
 		if (err) {
 			console.log(err);
-			return false;
+			return;
 		}
 		this.router.navigate(['/']);
-		return true;
 	};
-	private handleDeleteAccount = async (): Promise<boolean> => {
-		// ...
+	private handleDeleteAccount = async (): Promise<void> => {
+		//...
+		console.log('DELETE USER:', this.supabase.user?.id);
 		this.router.navigate(['/']);
-		return true;
 	};
 }

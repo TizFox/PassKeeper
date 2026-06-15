@@ -1,6 +1,5 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
+import { FormRoot, FormField, form } from '@angular/forms/signals';
 
 import { LucidePlus } from '@lucide/angular';
 
@@ -19,12 +18,20 @@ import { Button } from '$/shared/components/inputs/button';
 import { VaultAccount } from '$/shared/components/vault/vault-account';
 import { VaultCategory } from '$/shared/components/vault/vault-category';
 
+const JOLLY_CATEGORY_NAME = 'all';
+
+interface SearchData {
+	search: string;
+	categoryName: string;
+}
+
 @Component({
 	selector: 'app-vault-page',
 	templateUrl: './vault.html',
 	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [
-		ReactiveFormsModule,
+		FormRoot,
+		FormField,
 		LucidePlus,
 		Loading,
 		Empty,
@@ -49,19 +56,12 @@ export class VaultPage {
 	protected categoriesMap = computed<Record<string, Category>>(() => this.supabase.categories());
 
 	protected possibleCategories = computed<string[]>(() => [
-		'all',
+		JOLLY_CATEGORY_NAME,
 		DEFAULT_CATEGORY.name,
 		...Object.values(this.supabase.categories()).map((cat: Category) => cat.name),
 	]);
-	protected searchForm = new FormGroup({
-		search: new FormControl(''),
-		categoryName: new FormControl('all'),
-		// search: field(''),
-		// categoryName: field('all'),
-	});
-	private readonly searchFormValue = toSignal(this.searchForm.valueChanges, {
-		initialValue: this.searchForm.getRawValue(),
-	});
+	private searchModel = signal<SearchData>({ search: '', categoryName: JOLLY_CATEGORY_NAME });
+	protected searchForm = form(this.searchModel);
 	protected filteredAccountsIds = computed<string[]>(() =>
 		this.supabase.accountsIds().filter((id) => {
 			let account = this.supabase.accounts()[id];
@@ -70,11 +70,11 @@ export class VaultPage {
 			let filteredCategory = [
 				DEFAULT_CATEGORY,
 				...Object.values(this.supabase.categories()),
-			].find((cat) => cat.name === this.searchFormValue().categoryName);
+			].find((cat) => cat.name === this.searchModel().categoryName);
 
 			return (
 				(!filteredCategory /*all*/ || category.id === filteredCategory.id) &&
-				account.name.includes(this.searchFormValue().search ?? '')
+				account.name.includes(this.searchModel().search)
 			);
 		}),
 	);

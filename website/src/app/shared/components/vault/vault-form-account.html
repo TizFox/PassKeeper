@@ -34,15 +34,15 @@
 
 	@if (type() === "new-account" || type() === "modify-account") {
 		<form
-			[formGroup]="accountForm"
-			(ngSubmit)="formSubmit($event)"
+			[formRoot]="accountForm"
+			(submit)="formSubmit($event)"
 			class="flex flex-col gap-3"
 		>
-			<app-text-input placeholder="Account Name" formControlName="name" />
-			<app-text-input placeholder="Username" formControlName="username" />
-			<app-text-input type="email" placeholder="Email" formControlName="email" />
+			<app-text-input placeholder="Account Name" [formField]="accountForm.name" />
+			<app-text-input placeholder="Username" [formField]="accountForm.username" />
+			<app-text-input type="email" placeholder="Email" [formField]="accountForm.email" />
 			<div class="flex gap-2">
-				<app-text-input type="password" placeholder="Password" notObscured formControlName="password" />
+				<app-text-input type="password" placeholder="Password" notObscured [formField]="accountForm.password" />
 				<app-button
 					(onClick)="generatePassword()"
 					p="px-3"
@@ -50,10 +50,10 @@
 					Generate
 				</app-button>
 			</div>
-			<app-area-input placeholder="Notes" formControlName="notes" />
+			<app-area-input placeholder="Notes" [formField]="accountForm.notes" />
 			<div class="flex justify-between items-end">
 				<div class="flex items-center gap-1">
-					<app-select-input label="Category" [optionList]="possibleCategories()" formControlName="categoryName" />
+					<app-select-input label="Category" [optionList]="possibleCategories()" [formField]="accountForm.categoryName" />
 					<app-category-icon [category]="currentCategory()" simple />
 				</div>
 				<app-button type="submit">

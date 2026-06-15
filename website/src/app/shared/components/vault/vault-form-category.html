@@ -33,28 +33,27 @@
 
 	@if (type() === "new-category" || type() === "modify-category") {
 		<form
-			[formGroup]="categoryForm"
-			(ngSubmit)="formSubmit($event)"
+			[formRoot]="categoryForm"
+			(submit)="formSubmit($event)"
 			class="flex flex-col gap-3"
 		>
-			<app-text-input placeholder="Category Name" required formControlName="name" />
+			<app-text-input placeholder="Category Name" required [formField]="categoryForm.name" />
 
-			<app-select-input label="Icon" [optionList]="possibleIcons" formControlName="icon" />
+			<app-select-input label="Icon" [optionList]="possibleIcons" [formField]="categoryForm.icon" />
 
 			<div class="flex gap-3">
 				<div class="relative flex-1 input-h
 					border-2 base-rounded border-pla
 					color-transition
 					has-[:focus]:border-cta"
-					[style.background-color]="categoryFormValue().color"
+					[style.background-color]="currentCategory().color"
 				>
 					<input
 						type="color"
-						formControlName="color"
+						[formField]="categoryForm.color"
 						class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
 					/>
 				</div>
-
 
 				<app-button type="submit">
 					{{ "Save" }}
