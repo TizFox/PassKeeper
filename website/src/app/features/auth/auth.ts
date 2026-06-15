@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 
@@ -13,6 +13,7 @@ import { Button } from '$/shared/components/inputs/button';
 @Component({
 	selector: 'app-auth-page',
 	templateUrl: './auth.html',
+	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [ReactiveFormsModule, Loading, Container, TextInput, Button],
 })
 export class AuthPage {

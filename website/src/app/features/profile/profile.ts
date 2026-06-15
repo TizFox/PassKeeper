@@ -1,6 +1,6 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { FormField, form } from '@angular/forms/signals';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { Profile } from '$/core/types';
@@ -12,10 +12,16 @@ import { Avatar } from '$/shared/components/base/avatar';
 import { TextInput } from '$/shared/components/inputs/text-input';
 import { Button } from '$/shared/components/inputs/button';
 
+interface ProfileData {
+	newUsername: string;
+	newPassword: string;
+}
+
 @Component({
 	selector: 'app-profile-page',
 	templateUrl: './profile.html',
-	imports: [ReactiveFormsModule, Loading, Container, Avatar, TextInput, Button],
+	changeDetection: ChangeDetectionStrategy.Eager,
+	imports: [FormField, Loading, Container, Avatar, TextInput, Button],
 })
 export class ProfilePage {
 	private router: Router = inject(Router);
@@ -29,12 +35,11 @@ export class ProfilePage {
 
 	protected loading = signal<boolean>(false);
 
-	protected profileForm = new FormGroup({
-		newUsername: new FormControl(''),
-		newPassword: new FormControl(''),
-		// newUsername: field(''),
-		// newPassword: field(''),
+	private profileModel = signal<ProfileData>({
+		newUsername: '',
+		newPassword: '',
 	});
+	protected profileForm = form(this.profileModel);
 
 	protected handler = async (e: Event, type: string): Promise<void> => {
 		e.preventDefault();
@@ -55,23 +60,20 @@ export class ProfilePage {
 	};
 
 	private handleUpdate = async (): Promise<boolean> => {
-		if (
-			this.profileForm.value.newUsername === '' &&
-			this.profileForm.value.newPassword === ''
-		) {
+		if (this.profileModel().newUsername === '' && this.profileModel().newPassword === '') {
 			return false;
 		}
 
 		const err = await this.supabase.updateProfile({
-			newUsername: this.profileForm.value.newUsername ?? null,
-			newPassword: this.profileForm.value.newPassword ?? null,
+			newUsername: this.profileModel().newUsername ?? null,
+			newPassword: this.profileModel().newPassword ?? null,
 		});
 		if (err) {
 			console.log(err);
 			return false;
 		}
 
-		this.profileForm.reset();
+		this.profileModel.set({ newUsername: '', newPassword: '' });
 
 		return true;
 	};

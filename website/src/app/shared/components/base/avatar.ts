@@ -1,4 +1,4 @@
-import { Component, inject, input, computed } from '@angular/core';
+import { Component, inject, input, computed, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { SupabaseService } from '$/core/supabase.service';
@@ -11,6 +11,7 @@ import { SupabaseService } from '$/core/supabase.service';
 			display: contents;
 		}
 	`,
+	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [RouterLink],
 })
 export class Avatar {

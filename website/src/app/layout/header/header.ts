@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { User } from '@supabase/supabase-js';
@@ -13,6 +13,7 @@ import { Button } from '$/shared/components/inputs/button';
 	selector: 'app-header',
 	templateUrl: './header.html',
 	styleUrl: './header.css',
+	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [Loading, Logo, Avatar, Button],
 })
 export class Header {

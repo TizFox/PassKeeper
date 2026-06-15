@@ -1,4 +1,12 @@
-import { Component, inject, input, output, computed, effect } from '@angular/core';
+import {
+	Component,
+	inject,
+	input,
+	output,
+	computed,
+	effect,
+	ChangeDetectionStrategy,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 
@@ -23,6 +31,7 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 			display: contents;
 		}
 	`,
+	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [
 		ReactiveFormsModule,
 		LucidePencil,

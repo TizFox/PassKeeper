@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 
@@ -22,6 +22,7 @@ import { VaultCategory } from '$/shared/components/vault/vault-category';
 @Component({
 	selector: 'app-vault-page',
 	templateUrl: './vault.html',
+	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [
 		ReactiveFormsModule,
 		LucidePlus,

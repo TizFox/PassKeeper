@@ -6,6 +6,7 @@ import {
 	signal,
 	computed,
 	linkedSignal,
+	ChangeDetectionStrategy,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -35,6 +36,7 @@ import {
 			multi: true,
 		},
 	],
+	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [LucideDynamicIcon],
 })
 export class TextInput implements ControlValueAccessor {

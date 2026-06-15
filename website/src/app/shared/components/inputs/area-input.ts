@@ -1,4 +1,11 @@
-import { Component, forwardRef, input, booleanAttribute, signal } from '@angular/core';
+import {
+	Component,
+	forwardRef,
+	input,
+	booleanAttribute,
+	signal,
+	ChangeDetectionStrategy,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -9,6 +16,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 			display: contents;
 		}
 	`,
+	changeDetection: ChangeDetectionStrategy.Eager,
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,

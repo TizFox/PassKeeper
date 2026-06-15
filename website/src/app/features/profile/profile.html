@@ -12,12 +12,11 @@
 		</div>
 
 		<form
-			[formGroup]="profileForm"
 			(ngSubmit)="handler($event, 'update')"
 			class="w-full flex flex-col gap-3"
 		>
-			<app-text-input placeholder="New Username" formControlName="newUsername" />
-			<app-text-input type="password" placeholder="New Password" notObscured formControlName="newPassword" />
+			<app-text-input placeholder="New Username" [formField]="profileForm.newUsername" />
+			<app-text-input type="password" placeholder="New Password" notObscured [formField]="profileForm.newPassword" />
 
 			<app-button type="submit" [disabled]="loading()" extra="w-full">
 				{{loading() ? 'Loading...' : 'UPDATE'}}

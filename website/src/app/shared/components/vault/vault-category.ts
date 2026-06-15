@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 import { Category } from '$/core/types';
 
@@ -12,6 +12,7 @@ import { CategoryIcon } from '$/shared/components/vault/category-icon';
 			display: contents;
 		}
 	`,
+	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [CategoryIcon],
 })
 export class VaultCategory {

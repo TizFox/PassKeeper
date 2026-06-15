@@ -1,4 +1,4 @@
-import { Component, inject, input, output, computed } from '@angular/core';
+import { Component, inject, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { Account, Category, DEFAULT_CATEGORY } from '$/core/types';
@@ -14,6 +14,7 @@ import { CategoryIcon } from '$/shared/components/vault/category-icon';
 			display: contents;
 		}
 	`,
+	changeDetection: ChangeDetectionStrategy.Eager,
 	imports: [Container, CategoryIcon],
 })
 export class VaultAccount {
