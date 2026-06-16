@@ -10,7 +10,7 @@ import {
 	Session,
 } from '@supabase/supabase-js';
 
-import { env } from 'src/env';
+import { env } from '$/core/env';
 import { MasterService } from '$/core/master.service';
 import { Profile, Account, SupabaseAccount, Category } from '$/core/types';
 
