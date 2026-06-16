@@ -66,7 +66,7 @@ export class SupabaseService {
 		failure?: () => unknown;
 		loadAll?: boolean;
 	}) => {
-		let check = effect(async () => {
+		const check = effect(async () => {
 			if (!this.loading()) {
 				if (!this._user()) {
 					await failure();
@@ -167,7 +167,7 @@ export class SupabaseService {
 	};
 
 	private getAccounts = async (): Promise<Account[]> => {
-		let {
+		const {
 			data,
 			error,
 		}: {
@@ -179,14 +179,14 @@ export class SupabaseService {
 			return [];
 		}
 
-		let accounts = await Promise.all(
+		const accounts = await Promise.all(
 			data.map(async (supAcc) => await this.master.supabaseToAccount(supAcc)),
 		);
 
 		return accounts;
 	};
 	private getCategories = async (): Promise<Category[]> => {
-		let { data, error }: { data: Category[] | null; error: any } = await this.supabase
+		const { data, error }: { data: Category[] | null; error: any } = await this.supabase
 			.from('categories')
 			.select('*');
 		if (error || !data) {
@@ -311,6 +311,6 @@ function twoDigit(n: number): string {
 	return (Math.floor(n / 10) === 0 ? '0' : '') + n;
 }
 function formatDate(s: string): string {
-	let date = new Date(s);
+	const date = new Date(s);
 	return `${twoDigit(date.getDate())} / ${twoDigit(date.getMonth() + 1)} / ${date.getFullYear()} - ${twoDigit(date.getHours())}:${twoDigit(date.getMinutes())}`;
 }

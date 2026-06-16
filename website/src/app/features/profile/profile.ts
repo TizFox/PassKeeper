@@ -79,7 +79,7 @@ export class ProfilePage {
 		this.profileModel.set({ newUsername: '', newPassword: '' });
 	};
 	private handleLogout = async (): Promise<void> => {
-		let err = await this.supabase.logout();
+		const err = await this.supabase.logout();
 		if (err) {
 			console.log(err);
 			return;

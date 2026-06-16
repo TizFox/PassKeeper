@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
+import { Component, inject, input, output, computed, linkedSignal } from '@angular/core';
 import { FormRoot, FormField, form, required, email } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
@@ -59,20 +59,40 @@ export class VaultFormAccount {
 	close = output<void>();
 
 	accountId = input<string | null>(null);
-	private account = computed<Account>(() => this.supabase.accounts()[this.accountId() ?? '']);
+	private account = computed<Account | undefined>(
+		() => this.supabase.accounts()[this.accountId() ?? ''],
+	);
 
 	protected possibleCategories = computed<string[]>(() => [
 		DEFAULT_CATEGORY.name,
 		...Object.values(this.supabase.categories()).map((cat: Category) => cat.name),
 	]);
 
-	private accountModel = signal<AccountData>({
-		name: '',
-		username: '',
-		email: '',
-		password: '',
-		notes: '',
-		categoryName: DEFAULT_CATEGORY.name,
+	private accountModel = linkedSignal<AccountData>(() => {
+		if (
+			this.account() &&
+			(this.type() === 'view-account' || this.type() === 'modify-account')
+		) {
+			// Set Form Values to input Account
+			return {
+				name: this.account()?.name,
+				username: this.account()?.username ?? '',
+				email: this.account()?.email ?? '',
+				password: this.account()?.password ?? '',
+				notes: this.account()?.notes ?? '',
+				categoryName:
+					this.supabase.categories()[this.account()?.category_id ?? '']?.name ??
+					DEFAULT_CATEGORY.name,
+			} as AccountData;
+		}
+		return {
+			name: '',
+			username: '',
+			email: '',
+			password: '',
+			notes: '',
+			categoryName: DEFAULT_CATEGORY.name,
+		} as AccountData;
 	});
 	protected accountForm = form(this.accountModel, (schema) => {
 		required(schema.name);
@@ -80,27 +100,9 @@ export class VaultFormAccount {
 		required(schema.categoryName);
 	});
 
-	// Set Form Values to input Account
-	constructor() {
-		effect(() => {
-			if (this.type() === 'view-account') {
-				this.accountModel.set({
-					name: this.account()?.name ?? '',
-					username: this.account()?.username ?? '',
-					email: this.account()?.email ?? '',
-					password: this.account()?.password ?? '',
-					notes: this.account()?.notes ?? '',
-					categoryName:
-						this.supabase.categories()[this.account().category_id]?.name ??
-						DEFAULT_CATEGORY.name,
-				});
-			}
-		});
-	}
-
 	protected readonly currentAccount = computed<Account>(() => {
 		return {
-			id: this.accountId() ?? this.account()?.id,
+			id: this.accountId(),
 			name: this.accountModel().name,
 			username: this.accountModel().username,
 			email: this.accountModel().email,
@@ -148,7 +150,7 @@ export class VaultFormAccount {
 		let newPassword = '';
 
 		for (let i = 0; i < nLetters; i++) {
-			let letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
+			const letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
 			newPassword += Math.random() > 0.7 ? letter.toUpperCase() : letter;
 		}
 		for (let i = 0; i < nNumbers; i++) {

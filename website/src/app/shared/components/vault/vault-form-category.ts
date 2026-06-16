@@ -1,4 +1,13 @@
-import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
+import {
+	Component,
+	inject,
+	input,
+	output,
+	signal,
+	computed,
+	linkedSignal,
+	effect,
+} from '@angular/core';
 import { FormRoot, FormField, form, required } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
@@ -52,16 +61,30 @@ export class VaultFormCategory {
 	close = output<void>();
 
 	categoryId = input<string | null>(null);
-	private category = computed<Category>(
+	private category = computed<Category | undefined>(
 		() => this.supabase.categories()[this.categoryId() ?? ''] ?? DEFAULT_CATEGORY,
 	);
 
 	protected possibleIcons = Object.keys(CATEGORY_ICONS);
 
-	private categoryModel = signal<CategoryData>({
-		name: '',
-		icon: '',
-		color: '#000',
+	private categoryModel = linkedSignal<CategoryData>(() => {
+		if (
+			this.category() &&
+			(this.type() === 'view-category' || this.type() === 'modify-category')
+		) {
+			// Set Form Values to input Category
+			return {
+				name: this.category()?.name,
+				icon: this.category()?.icon,
+				color: this.category()?.color,
+			} as CategoryData;
+		}
+
+		return {
+			name: '',
+			icon: '',
+			color: '#000',
+		} as CategoryData;
 	});
 	protected categoryForm = form(this.categoryModel, (schema) => {
 		required(schema.name);
@@ -69,22 +92,9 @@ export class VaultFormCategory {
 		required(schema.color);
 	});
 
-	// Set Form Values to input Category
-	constructor() {
-		effect(() => {
-			if (this.type() === 'view-category') {
-				this.categoryModel.set({
-					name: this.category()?.name ?? '',
-					color: this.category()?.color ?? '',
-					icon: this.category()?.icon ?? '',
-				});
-			}
-		});
-	}
-
 	protected readonly currentCategory = computed<Category>(() => {
 		return {
-			id: this.categoryId() ?? this.category()?.id,
+			id: this.categoryId(),
 			name: this.categoryModel().name,
 			icon: this.categoryModel().icon,
 			color: this.categoryModel().color,

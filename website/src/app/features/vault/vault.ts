@@ -63,10 +63,10 @@ export class VaultPage {
 	protected searchForm = form(this.searchModel);
 	protected filteredAccountsIds = computed<string[]>(() =>
 		this.supabase.accountsIds().filter((id) => {
-			let account = this.supabase.accounts()[id];
-			let category = this.supabase.categories()[account.category_id] ?? DEFAULT_CATEGORY;
+			const account = this.supabase.accounts()[id];
+			const category = this.supabase.categories()[account.category_id] ?? DEFAULT_CATEGORY;
 
-			let filteredCategory = [
+			const filteredCategory = [
 				DEFAULT_CATEGORY,
 				...Object.values(this.supabase.categories()),
 			].find((cat) => cat.name === this.searchModel().categoryName);
