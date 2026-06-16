@@ -23,6 +23,7 @@ export class SupabaseService {
 	private master: MasterService = inject(MasterService);
 
 	private supabase: SupabaseClient;
+
 	private _user = signal<User | null>(null);
 	get user(): User | null {
 		return this._user();
@@ -127,15 +128,6 @@ export class SupabaseService {
 
 		return error?.message ?? null;
 	};
-	logout = async (): Promise<string | null> => {
-		const { error } = await this.supabase.auth.signOut();
-
-		if (!error) {
-			this.master.clearPassword();
-		}
-
-		return error?.message ?? null;
-	};
 	updateProfile = async ({
 		newUsername,
 		newPassword,
@@ -164,6 +156,19 @@ export class SupabaseService {
 		}
 
 		return null;
+	};
+	logout = async (): Promise<string | null> => {
+		const { error } = await this.supabase.auth.signOut();
+
+		if (!error) {
+			this.master.clearPassword();
+		}
+
+		return error?.message ?? null;
+	};
+	deleteUser = async (): Promise<string | null> => {
+		const { error } = await this.supabase.functions.invoke('delete-user');
+		return error?.message ?? null;
 	};
 
 	private getAccounts = async (): Promise<Account[]> => {

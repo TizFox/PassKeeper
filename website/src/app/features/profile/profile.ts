@@ -49,13 +49,13 @@ export class ProfilePage {
 
 		switch (type) {
 			case 'update':
-				this.handleUpdate();
+				await this.handleUpdate();
 				break;
 			case 'logout':
-				this.handleLogout();
+				await this.handleLogout();
 				break;
 			case 'delete':
-				this.handleDeleteAccount();
+				await this.handleDeleteAccount();
 				break;
 		}
 
@@ -87,8 +87,11 @@ export class ProfilePage {
 		this.router.navigate(['/']);
 	};
 	private handleDeleteAccount = async (): Promise<void> => {
-		//...
-		console.log('DELETE USER:', this.supabase.user?.id);
-		this.router.navigate(['/']);
+		const error = await this.supabase.deleteUser();
+		if (error) {
+			console.log(error);
+			return;
+		}
+		window.location.href = '/';
 	};
 }
