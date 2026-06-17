@@ -11,9 +11,9 @@
 			>
 				<h1 class="w-full text-center">LOGIN</h1>
 
-				<app-text-input type="email" placeholder="Email" required [formField]="loginForm.email" />
-				<app-text-input type="password" placeholder="Password" required [formField]="loginForm.password" />
-				<div class="invisible"><app-text-input /></div>
+				<app-text-input type="email" placeholder="Email*" [field]="loginForm.email()" />
+				<app-text-input type="password" placeholder="Password*" [field]="loginForm.password()" />
+				<div class="input-h"></div>
 
 				<div class="w-full flex justify-between items-end">
 					<a (click)="switchForm()" class="link">Create an account?</a>
@@ -31,9 +31,9 @@
 			>
 				<h1 class="w-full text-center">SIGNUP</h1>
 
-				<app-text-input placeholder="Username" required [formField]="signupForm.username" />
-				<app-text-input type="email" placeholder="Email" required [formField]="signupForm.email" />
-				<app-text-input type="password" placeholder="Password" required [formField]="signupForm.password" />
+				<app-text-input placeholder="Username*" [field]="signupForm.username()" />
+				<app-text-input type="email" placeholder="Email*" [field]="signupForm.email()" />
+				<app-text-input type="password" placeholder="Password*" [field]="signupForm.password()" />
 
 				<div class="w-full flex justify-between items-end">
 					<a (click)="switchForm()" class="link">Have an account?</a>

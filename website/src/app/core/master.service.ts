@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Account, SupabaseAccount, EncryptedPassword } from './types';
+import { SupabaseAccount, Account, EncryptedPassword } from './types';
 @Injectable({
 	providedIn: 'root',
 })

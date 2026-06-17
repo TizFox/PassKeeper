@@ -1,10 +1,11 @@
 import { Component, inject, input, output, computed, linkedSignal } from '@angular/core';
-import { FormRoot, FormField, form, required, email } from '@angular/forms/signals';
+import { FormRoot, form, required, email } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
-import { Account, Category, DEFAULT_CATEGORY, FormType } from '$/core/types';
+import { ToastService } from '$/core/toast.service';
+import { FormType, Account, Category, DEFAULT_CATEGORY } from '$/core/types';
 
 import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
 import { Container } from '$/shared/components/base/container';
@@ -35,7 +36,6 @@ interface AccountData {
 	`,
 	imports: [
 		FormRoot,
-		FormField,
 		LucidePencil,
 		LucideTrash2,
 		LucideX,
@@ -52,6 +52,7 @@ interface AccountData {
 })
 export class VaultFormAccount {
 	private supabase: SupabaseService = inject(SupabaseService);
+	private toast: ToastService = inject(ToastService);
 
 	type = input.required<FormType>();
 	modify = output<void>();
@@ -95,12 +96,21 @@ export class VaultFormAccount {
 		} as AccountData;
 	});
 	protected accountForm = form(this.accountModel, (schema) => {
-		required(schema.name);
-		email(schema.email);
-		required(schema.categoryName);
+		required(schema.name, { message: 'Missing Account Name' });
+		email(schema.email, { message: 'Invalid Email' });
 	});
+	private accountFormErrors = computed<string>(() =>
+		Object.keys(this.accountModel())
+			.flatMap((field) => (this.accountForm as any)[field]().errors())
+			.map((err) => err.message)
+			.join(', '),
+	);
 
 	protected readonly currentAccount = computed<Account>(() => {
+		const categoryId = [DEFAULT_CATEGORY, ...Object.values(this.supabase.categories())].find(
+			(cat) => cat.name === this.accountModel().categoryName,
+		)?.id;
+
 		return {
 			id: this.accountId(),
 			name: this.accountModel().name,
@@ -108,9 +118,7 @@ export class VaultFormAccount {
 			email: this.accountModel().email,
 			password: this.accountModel().password,
 			notes: this.accountModel().notes,
-			category_id: [DEFAULT_CATEGORY, ...Object.values(this.supabase.categories())].find(
-				(cat) => cat.name === this.accountModel().categoryName,
-			)?.id,
+			category_id: categoryId === '' ? null : categoryId,
 		} as Account;
 	});
 	protected readonly currentCategory = computed<Category>(() => {
@@ -120,7 +128,9 @@ export class VaultFormAccount {
 	protected formSubmit = async (e: Event): Promise<void> => {
 		e.preventDefault();
 
-		if (!this.accountForm().valid()) {
+		this.accountForm().markAsTouched();
+		if (this.accountForm().invalid()) {
+			this.toast.warning('Invalid Account Info', this.accountFormErrors());
 			return;
 		}
 

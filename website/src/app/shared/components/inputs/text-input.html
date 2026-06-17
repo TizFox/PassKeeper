@@ -2,25 +2,17 @@
 	<input
 		[type]="inputType()"
 		[placeholder]="placeholder()"
-		[required]="required()"
-		[disabled]="disabled()"
-		[value]="value()"
-		(input) ="onInput($event)"
-		(blur)="onBlur()"
-		class="peer flex-1 w-full input-h pl-7
-		placeholder-pla
-		border-y-2 border-t-transparent border-b-pla
+		[formField]="field"
+		[class]="'peer flex-1 w-full input-h pl-7
+		placeholder-mid
+		border-y-2 border-t-transparent
 		base-rounded
-		color-transition
-		focus:border-b-cta
-		user-invalid:border-b-err"
+		color-transition ' + (invalid() ? 'border-b-error' : 'border-b-mid focus:border-b-cta')"
 	/>
 
 	<div
-		class="absolute left-0 top-1/2 -translate-y-[50%]
-		text-pla color-transition
-		peer-focus:text-cta
-		peer-user-invalid:text-err"
+		[class]="'absolute left-0 top-1/2 -translate-y-[50%]
+		color-transition ' + (invalid() ? 'text-error' : 'text-mid peer-focus:text-cta')"
 	>
 		<svg [lucideIcon]="icon()"></svg>
 	</div>
@@ -30,10 +22,8 @@
 			type="button"
 			(mousedown)="$event.preventDefault()"
 			(click)="toggleObscured()"
-			class="absolute right-0 top-1/2 -translate-y-[50%]
-			text-pla cursor-pointer color-transition
-			peer-focus:text-cta
-			peer-user-invalid:text-err"
+			[class]="'absolute right-0 top-1/2 -translate-y-[50%]
+			cursor-pointer color-transition ' + (invalid() ? 'text-error' : 'text-mid peer-focus:text-cta')"
 		>
 			<svg [lucideIcon]="passIcon()"></svg>
 		</button>

@@ -1,24 +1,17 @@
-import {
-	Component,
-	inject,
-	input,
-	output,
-	signal,
-	computed,
-	linkedSignal,
-	effect,
-} from '@angular/core';
-import { FormRoot, FormField, form, required } from '@angular/forms/signals';
+import { Component, inject, input, output, computed, linkedSignal } from '@angular/core';
+import { FormRoot, form, required } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
-import { Category, CATEGORY_ICONS, DEFAULT_CATEGORY, FormType } from '$/core/types';
+import { ToastService } from '$/core/toast.service';
+import { ICONS_NAMES, FormType, Category, DEFAULT_CATEGORY } from '$/core/types';
 
 import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
 import { Container } from '$/shared/components/base/container';
 import { TextInput } from '$/shared/components/inputs/text-input';
 import { SelectInput } from '$/shared/components/inputs/select-input';
+import { ColorInput } from '$/shared/components/inputs/color-input';
 import { Button } from '$/shared/components/inputs/button';
 import { Value } from '$/shared/components/base/value';
 import { VaultCategory } from '$/shared/components/vault/vault-category';
@@ -39,7 +32,6 @@ interface CategoryData {
 	`,
 	imports: [
 		FormRoot,
-		FormField,
 		LucidePencil,
 		LucideTrash2,
 		LucideX,
@@ -47,6 +39,7 @@ interface CategoryData {
 		Container,
 		TextInput,
 		SelectInput,
+		ColorInput,
 		Button,
 		Value,
 		VaultCategory,
@@ -54,6 +47,7 @@ interface CategoryData {
 })
 export class VaultFormCategory {
 	private supabase: SupabaseService = inject(SupabaseService);
+	private toast: ToastService = inject(ToastService);
 
 	type = input.required<FormType>();
 	modify = output<void>();
@@ -64,8 +58,7 @@ export class VaultFormCategory {
 	private category = computed<Category | undefined>(
 		() => this.supabase.categories()[this.categoryId() ?? ''] ?? DEFAULT_CATEGORY,
 	);
-
-	protected possibleIcons = Object.keys(CATEGORY_ICONS);
+	protected possibleIcons = ICONS_NAMES;
 
 	private categoryModel = linkedSignal<CategoryData>(() => {
 		if (
@@ -82,15 +75,19 @@ export class VaultFormCategory {
 
 		return {
 			name: '',
-			icon: '',
+			icon: this.possibleIcons[0],
 			color: '#000',
 		} as CategoryData;
 	});
 	protected categoryForm = form(this.categoryModel, (schema) => {
-		required(schema.name);
-		required(schema.icon);
-		required(schema.color);
+		required(schema.name, { message: 'Missing Category Name' });
 	});
+	private categoryFormErrors = computed<string>(() =>
+		Object.keys(this.categoryModel())
+			.flatMap((field) => (this.categoryForm as any)[field]().errors())
+			.map((err) => err.message)
+			.join(', '),
+	);
 
 	protected readonly currentCategory = computed<Category>(() => {
 		return {
@@ -104,7 +101,9 @@ export class VaultFormCategory {
 	protected formSubmit = async (e: Event): Promise<void> => {
 		e.preventDefault();
 
-		if (!this.categoryForm().valid()) {
+		this.categoryForm().markAsTouched();
+		if (this.categoryForm().invalid()) {
+			this.toast.warning('Invalid Category Info', this.categoryFormErrors());
 			return;
 		}
 

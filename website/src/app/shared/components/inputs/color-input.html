@@ -1,0 +1,12 @@
+<div class="relative flex-1 input-h
+	border-2 base-rounded border-mid
+	color-transition
+	has-[:focus]:border-cta"
+	[style.background-color]="field().value()"
+>
+	<input
+		type="color"
+		[formField]="field"
+		class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+	/>
+</div>

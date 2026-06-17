@@ -2,7 +2,7 @@ import { Component, input, booleanAttribute, computed } from '@angular/core';
 
 import { LucideDynamicIcon, LucideIcon } from '@lucide/angular';
 
-import { Category, CATEGORY_ICONS } from '$/core/types';
+import { CATEGORY_ICONS, Category } from '$/core/types';
 
 @Component({
 	selector: 'app-category-icon',

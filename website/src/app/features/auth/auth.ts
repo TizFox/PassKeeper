@@ -1,8 +1,9 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormRoot, FormField, form, required, email, minLength } from '@angular/forms/signals';
+import { FormRoot, form, required, email, minLength } from '@angular/forms/signals';
 
-import { SupabaseService } from '$/core/supabase.service';
+import { SupabaseService, MIN_PASSWORD_LENGTH } from '$/core/supabase.service';
+import { ToastService } from '$/core/toast.service';
 
 import { Loading } from '$/shared/components/status/loading';
 
@@ -25,11 +26,12 @@ type AuthActions = 'login' | 'signup';
 @Component({
 	selector: 'app-auth-page',
 	templateUrl: './auth.html',
-	imports: [FormRoot, FormField, Loading, Container, TextInput, Button],
+	imports: [FormRoot, Loading, Container, TextInput, Button],
 })
 export class AuthPage {
 	private router: Router = inject(Router);
 	private supabase: SupabaseService = inject(SupabaseService);
+	private toast: ToastService = inject(ToastService);
 	constructor() {
 		this.supabase.checkAuth({
 			success: () => {
@@ -55,20 +57,32 @@ export class AuthPage {
 
 	private loginModel = signal<LoginData>({ email: '', password: '' });
 	protected loginForm = form(this.loginModel, (schema) => {
-		required(schema.email);
-		email(schema.email);
-		required(schema.password);
-		minLength(schema.password, 6);
+		required(schema.email, { message: 'Missing Email' });
+		email(schema.email, { message: 'Invalid Email' });
+		required(schema.password, { message: 'Missing Password' });
+		minLength(schema.password, MIN_PASSWORD_LENGTH, { message: 'Invalid Password' });
 	});
+	private loginFormErrors = computed<string>(() =>
+		Object.keys(this.loginModel())
+			.flatMap((field) => (this.loginForm as any)[field]().errors())
+			.map((err) => err.message)
+			.join(', '),
+	);
 
 	private signupModel = signal<SignupData>({ username: '', email: '', password: '' });
 	protected signupForm = form(this.signupModel, (schema) => {
-		required(schema.username);
-		required(schema.email);
-		email(schema.email);
-		required(schema.password);
-		minLength(schema.password, 6);
+		required(schema.username, { message: 'Missing Username' });
+		required(schema.email, { message: 'Missing Email' });
+		email(schema.email, { message: 'Invalid Email' });
+		required(schema.password, { message: 'Missing Password' });
+		minLength(schema.password, MIN_PASSWORD_LENGTH, { message: 'Invalid Password' });
 	});
+	private signupFormErrors = computed<string>(() =>
+		Object.keys(this.signupModel())
+			.flatMap((field) => (this.signupForm as any)[field]().errors())
+			.map((err) => err.message)
+			.join(', '),
+	);
 
 	protected handler = async (e: Event, type: AuthActions): Promise<void> => {
 		e.preventDefault();
@@ -93,8 +107,9 @@ export class AuthPage {
 	};
 
 	private handleLogin = async (): Promise<boolean> => {
-		if (!this.loginForm().valid()) {
-			console.log('INVALID LOGIN');
+		this.loginForm().markAsTouched();
+		if (this.loginForm().invalid()) {
+			this.toast.warning('Invalid Login Info', this.loginFormErrors());
 			return false;
 		}
 
@@ -102,14 +117,17 @@ export class AuthPage {
 		const err = await this.supabase.login(this.loginModel().email, this.loginModel().password);
 
 		if (err) {
+			this.toast.error("Can't login in this Account", err);
 			console.log(err);
 			return false;
 		}
 		return true;
 	};
 	private handleSignup = async (): Promise<boolean> => {
-		if (!this.signupForm().valid()) {
-			console.log('INVALID SIGNUP');
+		this.signupForm().markAsTouched();
+		if (this.signupForm().invalid()) {
+			console.log(this.signupForm().errors());
+			this.toast.warning('Invalid Signup Info', this.signupFormErrors());
 			return false;
 		}
 
@@ -120,6 +138,7 @@ export class AuthPage {
 			this.signupModel().password,
 		);
 		if (err) {
+			this.toast.error("Can't signup a new Account", err);
 			console.log(err);
 			return false;
 		}

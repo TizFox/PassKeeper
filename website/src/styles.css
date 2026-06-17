@@ -7,10 +7,14 @@
 	--avatar-size: 7vh;
 
 	--color-std: var(--color-gray-950);
+	--color-mid: var(--color-gray-500);
 	--color-inv: var(--color-gray-50);
-	--color-pla: var(--color-gray-500);
 	--color-cta: var(--color-teal-500);
-	--color-err: var(--color-rose-500);
+
+	--color-info: var(--color-blue-500);
+	--color-success: var(--color-emerald-500);
+	--color-warning: var(--color-amber-500);
+	--color-error: var(--color-rose-500);
 
 	--color-z0: var(--color-gray-100);
 	--color-z1: var(--color-gray-200);
@@ -88,7 +92,20 @@
 	}
 
 	.link {
-		@apply text-pla cursor-pointer
+		@apply text-mid cursor-pointer
 		hover:underline;
+	}
+
+	.toast-info {
+		@apply bg-info/30;
+	}
+	.toast-success {
+		@apply bg-success/30;
+	}
+	.toast-warning {
+		@apply bg-warning/30;
+	}
+	.toast-error {
+		@apply bg-error/30;
 	}
 }

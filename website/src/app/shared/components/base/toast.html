@@ -1,0 +1,12 @@
+<section class="bg-z0 p-3
+	flex items-center gap-2
+	container-rounded base-shadow"
+>
+	<div [class]="'p-2 base-shadow rounded-full toast-' + type()">
+		<svg [lucideIcon]="icon()"></svg>
+	</div>
+	<div class="flex flex-col">
+		<p class="text-std">{{ title() }}</p>
+		<p class="small-text text-mid">{{ message() }}</p>
+	</div>
+</section>

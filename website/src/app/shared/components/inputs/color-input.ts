@@ -1,9 +1,9 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FormField, FieldState } from '@angular/forms/signals';
 
 @Component({
-	selector: 'app-area-input',
-	templateUrl: './area-input.html',
+	selector: 'app-color-input',
+	templateUrl: './color-input.html',
 	styles: `
 		:host {
 			display: contents;
@@ -11,8 +11,6 @@ import { FormField, FieldState } from '@angular/forms/signals';
 	`,
 	imports: [FormField],
 })
-export class AreaInput {
-	placeholder = input<string>('');
-
+export class ColorInput {
 	field = input.required<FieldState<string, string>>();
 }

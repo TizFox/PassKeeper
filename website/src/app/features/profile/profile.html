@@ -12,8 +12,8 @@
 		</div>
 
 		<form [formRoot]="profileForm" (submit)="handler('update')" class="w-full flex flex-col gap-3">
-			<app-text-input placeholder="New Username" [formField]="profileForm.newUsername" />
-			<app-text-input type="password" placeholder="New Password" notObscured [formField]="profileForm.newPassword" />
+			<app-text-input placeholder="New Username" [field]="profileForm.newUsername()" />
+			<app-text-input type="password" placeholder="New Password" notObscured [field]="profileForm.newPassword()" />
 
 			<app-button type="submit" [disabled]="loading()" extra="w-full">
 				{{loading() ? 'Loading...' : 'UPDATE'}}

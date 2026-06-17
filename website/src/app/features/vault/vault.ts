@@ -1,10 +1,10 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { FormRoot, FormField, form } from '@angular/forms/signals';
+import { FormRoot, form } from '@angular/forms/signals';
 
 import { LucidePlus } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
-import { Account, Category, DEFAULT_CATEGORY, FormType } from '$/core/types';
+import { FormType, Account, Category, DEFAULT_CATEGORY } from '$/core/types';
 
 import { Loading } from '$/shared/components/status/loading';
 import { Empty } from '$/shared/components/status/empty';
@@ -30,7 +30,6 @@ interface SearchData {
 	templateUrl: './vault.html',
 	imports: [
 		FormRoot,
-		FormField,
 		LucidePlus,
 		Loading,
 		Empty,

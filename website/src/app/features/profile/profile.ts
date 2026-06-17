@@ -1,8 +1,9 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormRoot, FormField, form, minLength } from '@angular/forms/signals';
+import { FormRoot, form, minLength } from '@angular/forms/signals';
 
-import { SupabaseService } from '$/core/supabase.service';
+import { SupabaseService, MIN_PASSWORD_LENGTH } from '$/core/supabase.service';
+import { ToastService } from '$/core/toast.service';
 import { Profile } from '$/core/types';
 
 import { Loading } from '$/shared/components/status/loading';
@@ -22,11 +23,12 @@ type ProfileActions = 'update' | 'logout' | 'delete';
 @Component({
 	selector: 'app-profile-page',
 	templateUrl: './profile.html',
-	imports: [FormRoot, FormField, Loading, Container, Avatar, TextInput, Button],
+	imports: [FormRoot, Loading, Container, Avatar, TextInput, Button],
 })
 export class ProfilePage {
 	private router: Router = inject(Router);
 	private supabase: SupabaseService = inject(SupabaseService);
+	private toast: ToastService = inject(ToastService);
 	constructor() {
 		this.supabase.checkAuth({});
 	}
@@ -41,7 +43,7 @@ export class ProfilePage {
 		newPassword: '',
 	});
 	protected profileForm = form(this.profileModel, (schema) => {
-		minLength(schema.newPassword, 6);
+		minLength(schema.newPassword, MIN_PASSWORD_LENGTH);
 	});
 
 	protected handler = async (type: ProfileActions): Promise<void> => {
@@ -64,6 +66,7 @@ export class ProfilePage {
 
 	private handleUpdate = async (): Promise<void> => {
 		if (this.profileModel().newUsername === '' && this.profileModel().newPassword === '') {
+			this.toast.warning('Missing New Info');
 			return;
 		}
 
@@ -72,26 +75,31 @@ export class ProfilePage {
 			newPassword: this.profileModel().newPassword ?? null,
 		});
 		if (err) {
+			this.toast.error("Can't update your Profile", err);
 			console.log(err);
 			return;
 		}
+		this.toast.success('Profile updated successfully');
 
 		this.profileModel.set({ newUsername: '', newPassword: '' });
 	};
 	private handleLogout = async (): Promise<void> => {
 		const err = await this.supabase.logout();
 		if (err) {
+			this.toast.error("Can't logout from your Account", err);
 			console.log(err);
 			return;
 		}
 		this.router.navigate(['/']);
 	};
 	private handleDeleteAccount = async (): Promise<void> => {
-		const error = await this.supabase.deleteUser();
-		if (error) {
-			console.log(error);
+		const err = await this.supabase.deleteUser();
+		if (err) {
+			this.toast.error("Can't delete your Account", err);
+			console.log(err);
 			return;
 		}
+		this.toast.info('Account deleated successfully');
 		window.location.href = '/';
 	};
 }

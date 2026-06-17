@@ -1,17 +1,13 @@
 <textarea
 	[placeholder]="placeholder()"
-	[required]="required()"
-	[disabled]="disabled()"
-	[value]="value()"
-	(input) ="onInput($event)"
-	(blur)="onBlur()"
+	[formField]="field"
 	class="px-1 pt-1 w-full input-h
 	field-sizing-content resize-none
-	placeholder-pla
-	border-b-2 border-pla
+	placeholder-mid
+	border-b-2 border-mid
 	base-rounded
 	color-transition
 	focus:border-cta
-	user-invalid:border-err"
+	user-invalid:border-error"
 >
 </textarea>

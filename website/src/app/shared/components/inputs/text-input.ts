@@ -1,13 +1,5 @@
-import {
-	Component,
-	forwardRef,
-	input,
-	booleanAttribute,
-	signal,
-	computed,
-	linkedSignal,
-} from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, input, booleanAttribute, computed, linkedSignal } from '@angular/core';
+import { FormField, FieldState } from '@angular/forms/signals';
 
 import {
 	LucideDynamicIcon,
@@ -28,24 +20,18 @@ import {
 			display: contents;
 		}
 	`,
-	providers: [
-		{
-			provide: NG_VALUE_ACCESSOR,
-			useExisting: forwardRef(() => TextInput),
-			multi: true,
-		},
-	],
-	imports: [LucideDynamicIcon],
+	imports: [FormField, LucideDynamicIcon],
 })
-export class TextInput implements ControlValueAccessor {
+export class TextInput {
 	type = input<string>('text');
 	placeholder = input<string>('');
 	extra = input<string>('');
 	notObscured = input(false, { transform: booleanAttribute });
-	required = input(false, { transform: booleanAttribute });
 
-	protected value = signal<string>('');
-	protected disabled = signal<boolean>(false);
+	field = input.required<FieldState<string, string>>();
+	protected invalid = computed<boolean>(() => {
+		return this.field().touched() && this.field().invalid();
+	});
 
 	protected obscured = linkedSignal<boolean>(() => !this.notObscured());
 	protected passIcon = computed<LucideIcon>(() => (this.obscured() ? LucideEye : LucideEyeOff));
@@ -57,7 +43,6 @@ export class TextInput implements ControlValueAccessor {
 		if (this.type() === 'search' || (this.type() === 'password' && !this.obscured())) {
 			return 'text';
 		}
-
 		return this.type();
 	});
 
@@ -75,28 +60,4 @@ export class TextInput implements ControlValueAccessor {
 				return LucideTextCursorInput;
 		}
 	});
-
-	protected onChange: (v: string) => void = () => {};
-	protected onTouched: () => void = () => {};
-
-	writeValue = (value: string): void => {
-		this.value.set(value ?? '');
-	};
-	registerOnChange = (fn: (v: string) => void): void => {
-		this.onChange = fn;
-	};
-	registerOnTouched = (fn: () => void): void => {
-		this.onTouched = fn;
-	};
-	setDisabledState = (isDisabled: boolean): void => {
-		this.disabled.set(isDisabled);
-	};
-	protected onInput = (e: Event): void => {
-		const val = (e.target as HTMLInputElement).value;
-		this.value.set(val);
-		this.onChange(val);
-	};
-	protected onBlur = (): void => {
-		this.onTouched();
-	};
 }

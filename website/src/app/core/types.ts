@@ -8,6 +8,13 @@ import {
 	LucideBriefcaseBusiness,
 	LucideSmartphone,
 	LucideLaptop,
+	LucideLayers,
+	LucideHospital,
+	LucideInfo,
+	LucideSquareCheckBig,
+	LucideTriangleAlert,
+	LucideOctagonX,
+	LucideSkull,
 } from '@lucide/angular';
 
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -19,30 +26,36 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
 	work: LucideBriefcaseBusiness,
 	phone: LucideSmartphone,
 	computer: LucideLaptop,
-};
+	documents: LucideLayers,
+	health: LucideHospital,
+} as const;
+type PossibleCategoryIcons = keyof typeof CATEGORY_ICONS;
+export const ICONS_NAMES: PossibleCategoryIcons[] = Object.keys(CATEGORY_ICONS);
+
+export const TOAST_ICONS: Record<string, LucideIcon> = {
+	info: LucideInfo,
+	success: LucideSquareCheckBig,
+	warning: LucideTriangleAlert,
+	error: LucideOctagonX,
+} as const;
+export type PossibleToastIcons = keyof typeof TOAST_ICONS;
+
+/* -------------------------------------------------------------- */
+
+export type FormType =
+	| 'no-form'
+	| 'new-account'
+	| 'view-account'
+	| 'modify-account'
+	| 'new-category'
+	| 'view-category'
+	| 'modify-category';
 
 export type Profile = {
 	email: string;
 	createdAt: string;
 	username: string;
 };
-
-export type Account = {
-	id: string;
-	name: string;
-	username?: string;
-	email?: string;
-	password?: string;
-	notes?: string;
-	category_id: string;
-};
-
-export type EncryptedPassword = {
-	password: string;
-	iv: string;
-	tag: string;
-};
-
 export type SupabaseAccount = {
 	id: string;
 	name: string;
@@ -54,25 +67,30 @@ export type SupabaseAccount = {
 	tag?: string;
 	category_id: string;
 };
-
+export type Account = {
+	id: string;
+	name: string;
+	username?: string;
+	email?: string;
+	password?: string;
+	notes?: string;
+	category_id: string;
+};
+export type EncryptedPassword = {
+	password: string;
+	iv: string;
+	tag: string;
+};
 export type Category = {
 	id: string;
 	name: string;
-	icon: keyof typeof CATEGORY_ICONS;
+	icon: PossibleCategoryIcons;
 	color: string;
 };
-export const DEFAULT_CATEGORY = {
-	id: null,
+
+export const DEFAULT_CATEGORY: Category = {
+	id: '',
 	name: 'Default',
 	icon: 'default',
 	color: '#000',
 };
-
-export type FormType =
-	| 'no-form'
-	| 'new-account'
-	| 'view-account'
-	| 'modify-account'
-	| 'new-category'
-	| 'view-category'
-	| 'modify-category';

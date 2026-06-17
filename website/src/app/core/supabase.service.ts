@@ -12,7 +12,10 @@ import {
 
 import { env } from '$/core/env';
 import { MasterService } from '$/core/master.service';
-import { Profile, Account, SupabaseAccount, Category } from '$/core/types';
+import { ToastService } from './toast.service';
+import { Profile, SupabaseAccount, Account, Category } from '$/core/types';
+
+export const MIN_PASSWORD_LENGTH = 6;
 
 @Injectable({
 	providedIn: 'root',
@@ -21,6 +24,7 @@ export class SupabaseService {
 	private platformId = inject(PLATFORM_ID);
 	private router: Router = inject(Router);
 	private master: MasterService = inject(MasterService);
+	private toast: ToastService = inject(ToastService);
 
 	private supabase: SupabaseClient;
 
@@ -180,7 +184,8 @@ export class SupabaseService {
 			error: any;
 		} = await this.supabase.from('accounts').select('*');
 		if (error || !data) {
-			console.log(error);
+			this.toast.error("Can't get your Accounts", error.message);
+			console.log(error.message);
 			return [];
 		}
 
@@ -195,7 +200,8 @@ export class SupabaseService {
 			.from('categories')
 			.select('*');
 		if (error || !data) {
-			console.log(error);
+			this.toast.error("Can't get your Categories", error.message);
+			console.log(error.message);
 			return [];
 		}
 
@@ -228,6 +234,7 @@ export class SupabaseService {
 			.select()
 			.single();
 		if (error) {
+			this.toast.error("Can't create the new Account", error.message);
 			console.log(error.message);
 			return;
 		}
@@ -244,6 +251,7 @@ export class SupabaseService {
 			.eq('id', updateAcc.id)
 			.eq('user_id', this._user()?.id!);
 		if (error) {
+			this.toast.error("Can't modify the Account", error.message);
 			console.log(error.message);
 			return;
 		}
@@ -257,6 +265,7 @@ export class SupabaseService {
 			.eq('id', accId)
 			.eq('user_id', this._user()?.id!);
 		if (error) {
+			this.toast.error("Can't delete the Account", error.message);
 			console.log(error.message);
 			return;
 		}
@@ -275,6 +284,7 @@ export class SupabaseService {
 			.select()
 			.single();
 		if (error) {
+			this.toast.error("Can't create the new Category", error.message);
 			console.log(error.message);
 			return;
 		}
@@ -289,6 +299,7 @@ export class SupabaseService {
 			.eq('id', cat.id)
 			.eq('user_id', this._user()?.id!);
 		if (error) {
+			this.toast.error("Can't modify the Account", error.message);
 			console.log(error.message);
 			return;
 		}
@@ -304,6 +315,7 @@ export class SupabaseService {
 			.eq('id', catId)
 			.eq('user_id', this._user()?.id!);
 		if (error) {
+			this.toast.error("Can't delete the Account", error.message);
 			console.log(error.message);
 			return;
 		}
