@@ -16,7 +16,7 @@
 
 			@if (type() === "modify-account") {
 				<app-button
-					(onClick)="delete.emit(currentAccount().id)"
+					(onClick)="showConfirmDelete.set(true)"
 					p="p-1"
 				>
 					<svg lucideTrash2 class="w-6 h-6" strokeWidth="3"></svg>
@@ -73,8 +73,12 @@
 			</div>
 
 			<div class="col-span-4 flex justify-center items-center">
-				<app-vault-category [category]="currentCategory()" />
+				<app-category-record [category]="currentCategory()" />
 			</div>
 		</div>
 	}
 </app-container>
+
+@if (showConfirmDelete()) {
+	<app-confirm title="Delete Account?" [message]="`If you are sure type: 'I want to delete ${currentAccount().name} Account'`" [checkText]="`I want to delete ${currentAccount().name} Account`" (close)="closeConfirmDelete($event)" />
+}

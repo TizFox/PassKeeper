@@ -5,8 +5,8 @@ import { Category } from '$/core/types';
 import { CategoryIcon } from '$/shared/components/vault/category-icon';
 
 @Component({
-	selector: 'app-vault-category',
-	templateUrl: './vault-category.html',
+	selector: 'app-category-record',
+	templateUrl: './category-record.html',
 	styles: `
 		:host {
 			display: contents;
@@ -14,7 +14,7 @@ import { CategoryIcon } from '$/shared/components/vault/category-icon';
 	`,
 	imports: [CategoryIcon],
 })
-export class VaultCategory {
+export class CategoryRecord {
 	category = input.required<Category>();
 	onClick = output<void>();
 }

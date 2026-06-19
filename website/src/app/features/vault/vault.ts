@@ -12,11 +12,11 @@ import { Empty } from '$/shared/components/status/empty';
 import { TextInput } from '$/shared/components/inputs/text-input';
 import { SelectInput } from '$/shared/components/inputs/select-input';
 
-import { VaultFormAccount } from '$/shared/components/vault/vault-form-account';
-import { VaultFormCategory } from '$/shared/components/vault/vault-form-category';
 import { Button } from '$/shared/components/inputs/button';
-import { VaultAccount } from '$/shared/components/vault/vault-account';
-import { VaultCategory } from '$/shared/components/vault/vault-category';
+import { AccountRecord } from '$/shared/components/vault/account-record';
+import { CategoryRecord } from '$/shared/components/vault/category-record';
+import { AccountForm } from '$/shared/components/vault/account-form';
+import { CategoryForm } from '$/shared/components/vault/category-form';
 
 const JOLLY_CATEGORY_NAME = 'all';
 
@@ -35,11 +35,11 @@ interface SearchData {
 		Empty,
 		TextInput,
 		SelectInput,
-		VaultFormAccount,
-		VaultFormCategory,
+		AccountForm,
+		CategoryForm,
 		Button,
-		VaultAccount,
-		VaultCategory,
+		AccountRecord,
+		CategoryRecord,
 	],
 })
 export class VaultPage {

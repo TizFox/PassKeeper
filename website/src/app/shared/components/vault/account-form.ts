@@ -1,4 +1,4 @@
-import { Component, inject, input, output, computed, linkedSignal } from '@angular/core';
+import { Component, inject, input, output, signal, computed, linkedSignal } from '@angular/core';
 import { FormRoot, form, required, email } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
@@ -15,7 +15,8 @@ import { SelectInput } from '$/shared/components/inputs/select-input';
 import { CategoryIcon } from '$/shared/components/vault/category-icon';
 import { Button } from '$/shared/components/inputs/button';
 import { Value } from '$/shared/components/base/value';
-import { VaultCategory } from '$/shared/components/vault/vault-category';
+import { CategoryRecord } from '$/shared/components/vault/category-record';
+import { Confirm } from '$/shared/components/status/confirm';
 
 interface AccountData {
 	name: string;
@@ -27,8 +28,8 @@ interface AccountData {
 }
 
 @Component({
-	selector: 'app-vault-form-account',
-	templateUrl: './vault-form-account.html',
+	selector: 'app-account-form',
+	templateUrl: './account-form.html',
 	styles: `
 		:host {
 			display: contents;
@@ -47,10 +48,11 @@ interface AccountData {
 		CategoryIcon,
 		Button,
 		Value,
-		VaultCategory,
+		CategoryRecord,
+		Confirm,
 	],
 })
-export class VaultFormAccount {
+export class AccountForm {
 	private supabase: SupabaseService = inject(SupabaseService);
 	private toast: ToastService = inject(ToastService);
 
@@ -178,5 +180,16 @@ export class VaultFormAccount {
 			.join('');
 
 		this.accountModel.update((old) => ({ ...old, password: newPassword }));
+	};
+
+	protected showConfirmDelete = signal<boolean>(false);
+	protected closeConfirmDelete = (confirmed: boolean): void => {
+		this.showConfirmDelete.set(false);
+
+		if (!confirmed) {
+			return;
+		}
+
+		this.delete.emit(this.currentAccount().id);
 	};
 }

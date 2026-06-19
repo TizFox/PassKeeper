@@ -8,6 +8,7 @@ import { Profile } from '$/core/types';
 
 import { Loading } from '$/shared/components/status/loading';
 
+import { Confirm } from '$/shared/components/status/confirm';
 import { Container } from '$/shared/components/base/container';
 import { Avatar } from '$/shared/components/base/avatar';
 import { TextInput } from '$/shared/components/inputs/text-input';
@@ -23,7 +24,7 @@ type ProfileActions = 'update' | 'logout' | 'delete';
 @Component({
 	selector: 'app-profile-page',
 	templateUrl: './profile.html',
-	imports: [FormRoot, Loading, Container, Avatar, TextInput, Button],
+	imports: [FormRoot, Loading, Confirm, Container, Avatar, TextInput, Button],
 })
 export class ProfilePage {
 	private router: Router = inject(Router);
@@ -37,6 +38,7 @@ export class ProfilePage {
 	protected profile = computed<Profile>(() => this.supabase.profile());
 
 	protected loading = signal<boolean>(false);
+	protected showConfirmDelete = signal<boolean>(false);
 
 	private profileModel = signal<ProfileData>({
 		newUsername: '',
@@ -46,7 +48,7 @@ export class ProfilePage {
 		minLength(schema.newPassword, MIN_PASSWORD_LENGTH);
 	});
 
-	protected handler = async (type: ProfileActions): Promise<void> => {
+	protected handler = async (type: ProfileActions, confirmed: boolean = false): Promise<void> => {
 		this.loading.set(true);
 
 		switch (type) {
@@ -57,7 +59,7 @@ export class ProfilePage {
 				await this.handleLogout();
 				break;
 			case 'delete':
-				await this.handleDeleteAccount();
+				await this.handleDeleteAccount(confirmed);
 				break;
 		}
 
@@ -92,7 +94,13 @@ export class ProfilePage {
 		}
 		this.router.navigate(['/']);
 	};
-	private handleDeleteAccount = async (): Promise<void> => {
+	private handleDeleteAccount = async (confirmed: boolean): Promise<void> => {
+		this.showConfirmDelete.set(false);
+
+		if (!confirmed) {
+			return;
+		}
+
 		const err = await this.supabase.deleteUser();
 		if (err) {
 			this.toast.error("Can't delete your Account", err);

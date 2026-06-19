@@ -15,7 +15,7 @@
 
 			@if (type() === "modify-category") {
 				<app-button
-					(onClick)="delete.emit(currentCategory().id)"
+					(onClick)="showConfirmDelete.set(true)"
 					p="p-1"
 				>
 					<svg lucideTrash2 class="w-6 h-6" strokeWidth="3"></svg>
@@ -43,18 +43,6 @@
 
 			<div class="flex gap-3">
 				<app-color-input [field]="categoryForm.color()" />
-				<!--<div class="relative flex-1 input-h
-					border-2 base-rounded border-mid
-					color-transition
-					has-[:focus]:border-cta"
-					[style.background-color]="currentCategory().color"
-				>
-					<input
-						type="color"
-						[formField]="categoryForm.color"
-						class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-					/>
-					</div>-->
 
 				<app-button type="submit">
 					{{ "Save" }}
@@ -70,6 +58,10 @@
 	}
 	<div>
 		Preview:
-		<app-vault-category [category]="currentCategory()" />
+		<app-category-record [category]="currentCategory()" />
 	</div>
 </app-container>
+
+@if (showConfirmDelete()) {
+	<app-confirm title="Delete Category?" [message]="`If you are sure type: 'I want to delete ${currentCategory().name} Category'`" [checkText]="`I want to delete ${currentCategory().name} Category`" (close)="closeConfirmDelete($event)" />
+}

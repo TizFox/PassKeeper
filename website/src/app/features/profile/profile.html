@@ -11,11 +11,11 @@
 			</div>
 		</div>
 
-		<form [formRoot]="profileForm" (submit)="handler('update')" class="w-full flex flex-col gap-3">
+		<form [formRoot]="profileForm" class="w-full flex flex-col gap-3">
 			<app-text-input placeholder="New Username" [field]="profileForm.newUsername()" />
 			<app-text-input type="password" placeholder="New Password" notObscured [field]="profileForm.newPassword()" />
 
-			<app-button type="submit" [disabled]="loading()" extra="w-full">
+			<app-button (onClick)="handler('update')" [disabled]="loading()" extra="w-full">
 				{{loading() ? 'Loading...' : 'UPDATE'}}
 			</app-button>
 
@@ -24,10 +24,14 @@
 					{{loading() ? 'Loading...' : 'LOGOUT'}}
 				</app-button>
 
-				<app-button (onClick)="handler('delete')" [disabled]="loading()" extra="w-full">
+				<app-button (onClick)="showConfirmDelete.set(true)" [disabled]="loading()" extra="w-full">
 					{{loading() ? 'Loading...' : 'DELETE'}}
 				</app-button>
 			</div>
 		</form>
 	</app-container>
+
+	@if (showConfirmDelete()) {
+		<app-confirm title="Delete Account?" message="If you are sure type: 'I want to delete my account'." checkText="I want to delete my account" (close)="handler('delete', $event)" />
+	}
 }

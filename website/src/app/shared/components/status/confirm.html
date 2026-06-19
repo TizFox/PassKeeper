@@ -1,0 +1,30 @@
+<app-container popup>
+	<div class="flex justify-between">
+		<h1 class="font-semibold text-cta">
+			{{ title() }}
+		</h1>
+
+		<app-button
+			(onClick)="close.emit(false)"
+			p="p-1"
+		>
+			<svg lucideX class="w-6 h-6" strokeWidth="3"></svg>
+		</app-button>
+	</div>
+
+	<p>{{ message() }}</p>
+
+	<form
+		[formRoot]="checkForm"
+		(submit)="formSubmit($event)"
+		class="flex flex-col gap-3"
+	>
+		@if (checkText()) {
+			<app-text-input placeholder="Confirm Text" [field]="checkForm.text()" />
+		}
+
+		<app-button type="submit">
+			Confirm
+		</app-button>
+	</form>
+</app-container>

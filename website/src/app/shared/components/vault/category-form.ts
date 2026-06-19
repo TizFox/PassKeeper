@@ -1,4 +1,4 @@
-import { Component, inject, input, output, computed, linkedSignal } from '@angular/core';
+import { Component, inject, input, output, signal, computed, linkedSignal } from '@angular/core';
 import { FormRoot, form, required } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
@@ -14,7 +14,8 @@ import { SelectInput } from '$/shared/components/inputs/select-input';
 import { ColorInput } from '$/shared/components/inputs/color-input';
 import { Button } from '$/shared/components/inputs/button';
 import { Value } from '$/shared/components/base/value';
-import { VaultCategory } from '$/shared/components/vault/vault-category';
+import { CategoryRecord } from '$/shared/components/vault/category-record';
+import { Confirm } from '$/shared/components/status/confirm';
 
 interface CategoryData {
 	name: string;
@@ -23,8 +24,8 @@ interface CategoryData {
 }
 
 @Component({
-	selector: 'app-vault-form-category',
-	templateUrl: './vault-form-category.html',
+	selector: 'app-category-form',
+	templateUrl: './category-form.html',
 	styles: `
 		:host {
 			display: contents;
@@ -42,10 +43,11 @@ interface CategoryData {
 		ColorInput,
 		Button,
 		Value,
-		VaultCategory,
+		CategoryRecord,
+		Confirm,
 	],
 })
-export class VaultFormCategory {
+export class CategoryForm {
 	private supabase: SupabaseService = inject(SupabaseService);
 	private toast: ToastService = inject(ToastService);
 
@@ -119,5 +121,16 @@ export class VaultFormCategory {
 		}
 
 		this.close.emit();
+	};
+
+	protected showConfirmDelete = signal<boolean>(false);
+	protected closeConfirmDelete = (confirmed: boolean): void => {
+		this.showConfirmDelete.set(false);
+
+		if (!confirmed) {
+			return;
+		}
+
+		this.delete.emit(this.currentCategory().id);
 	};
 }

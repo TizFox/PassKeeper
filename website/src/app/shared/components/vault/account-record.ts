@@ -7,8 +7,8 @@ import { Container } from '$/shared/components/base/container';
 import { CategoryIcon } from '$/shared/components/vault/category-icon';
 
 @Component({
-	selector: 'app-vault-account',
-	templateUrl: './vault-account.html',
+	selector: 'app-account-record',
+	templateUrl: './account-record.html',
 	styles: `
 		:host {
 			display: contents;
@@ -16,7 +16,7 @@ import { CategoryIcon } from '$/shared/components/vault/category-icon';
 	`,
 	imports: [Container, CategoryIcon],
 })
-export class VaultAccount {
+export class AccountRecord {
 	private supabase: SupabaseService = inject(SupabaseService);
 
 	account = input.required<Account>();
