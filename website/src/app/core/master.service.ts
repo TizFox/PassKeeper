@@ -33,7 +33,7 @@ export class MasterService {
 		this._key = null;
 	};
 
-	private encript = async (password: string): Promise<EncryptedPassword> => {
+	private encrypt = async (password: string): Promise<EncryptedPassword> => {
 		if (!this._key) {
 			throw Error('No Key');
 		}
@@ -57,7 +57,7 @@ export class MasterService {
 			tag: btoa(String.fromCharCode(...tag)),
 		} as EncryptedPassword;
 	};
-	private decript = async (password: EncryptedPassword): Promise<string> => {
+	private decrypt = async (password: EncryptedPassword): Promise<string> => {
 		if (!this._key) {
 			throw Error('No Key');
 		}
@@ -80,7 +80,7 @@ export class MasterService {
 
 	supabaseToAccount = async (supAcc: SupabaseAccount): Promise<Account> => {
 		const { password, iv, tag, ...partialAcc } = supAcc;
-		const decPass: string = await this.decript({
+		const decPass: string = await this.decrypt({
 			password,
 			iv,
 			tag,
@@ -93,7 +93,7 @@ export class MasterService {
 	};
 	accountToSupabase = async (acc: Account): Promise<SupabaseAccount> => {
 		const { password, ...partialAcc } = acc;
-		const encPass: EncryptedPassword = await this.encript(password ?? '');
+		const encPass: EncryptedPassword = await this.encrypt(password ?? '');
 
 		return {
 			...partialAcc,

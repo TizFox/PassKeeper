@@ -10,7 +10,7 @@
 		color-transition
 		focus:border-b-cta">
 		@for (opt of optionList(); track opt) {
-			<option [value]="opt" [selected]="opt === field().value()">{{ opt | dashtotitle }}</option>
+			<option [value]="opt" [selected]="opt === field().value()">{{ opt | dashToTitle }}</option>
 		}
 	</select>
 </div>

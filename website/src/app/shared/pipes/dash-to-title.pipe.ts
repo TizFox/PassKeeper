@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-	name: 'dashtotitle',
+	name: 'dashToTitle',
 })
 export class DashToTitlePipe implements PipeTransform {
 	transform(dashed: string): string {

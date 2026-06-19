@@ -109,6 +109,11 @@ export class AuthPage {
 	private handleLogin = async (): Promise<boolean> => {
 		this.loginForm().markAsTouched();
 		if (this.loginForm().invalid()) {
+			/*
+			const errors = [...this.loginForm.email().errors(), ...this.loginForm.email().errors()]
+				.map((err) => err.message)
+				.join(', ');
+			*/
 			this.toast.warning('Invalid Login Info', this.loginFormErrors());
 			return false;
 		}

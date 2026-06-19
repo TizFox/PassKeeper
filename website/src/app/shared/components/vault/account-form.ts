@@ -151,8 +151,14 @@ export class AccountForm {
 	};
 
 	protected generatePassword = (): void => {
+		function safeRandom(max: number): number {
+			const arr = new Uint32Array(1);
+			crypto.getRandomValues(arr);
+			return arr[0] % max;
+		}
+
 		const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
-		const NUMBERS = '01234567890';
+		const NUMBERS = '0123456789';
 		const SYMBOLS = `!#$%&'"()*+,-./:;<=>?@[]^_{|}~`;
 
 		const nLetters = 7;
@@ -162,14 +168,14 @@ export class AccountForm {
 		let newPassword = '';
 
 		for (let i = 0; i < nLetters; i++) {
-			const letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
+			const letter = LETTERS[safeRandom(LETTERS.length)];
 			newPassword += Math.random() > 0.7 ? letter.toUpperCase() : letter;
 		}
 		for (let i = 0; i < nNumbers; i++) {
-			newPassword += NUMBERS[Math.floor(Math.random() * NUMBERS.length)];
+			newPassword += NUMBERS[safeRandom(NUMBERS.length)];
 		}
 		for (let i = 0; i < nSymbols; i++) {
-			newPassword += SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+			newPassword += SYMBOLS[safeRandom(SYMBOLS.length)];
 		}
 
 		newPassword = newPassword
