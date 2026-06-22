@@ -7,6 +7,8 @@ import { SupabaseService } from '$/core/supabase.service';
 import { ToastService } from '$/core/toast.service';
 import { ICONS_NAMES, FormType, Category, DEFAULT_CATEGORY } from '$/core/types';
 
+import { getFormErrors } from '$/shared/utils/form-errors';
+
 import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
 import { Container } from '$/shared/components/base/container';
 import { TextInput } from '$/shared/components/inputs/text-input';
@@ -84,12 +86,6 @@ export class CategoryForm {
 	protected categoryForm = form(this.categoryModel, (schema) => {
 		required(schema.name, { message: 'Missing Category Name' });
 	});
-	private categoryFormErrors = computed<string>(() =>
-		Object.keys(this.categoryModel())
-			.flatMap((field) => (this.categoryForm as any)[field]().errors())
-			.map((err) => err.message)
-			.join(', '),
-	);
 
 	protected readonly currentCategory = computed<Category>(() => {
 		return {
@@ -105,7 +101,10 @@ export class CategoryForm {
 
 		this.categoryForm().markAsTouched();
 		if (this.categoryForm().invalid()) {
-			this.toast.warning('Invalid Category Info', this.categoryFormErrors());
+			this.toast.warning(
+				'Invalid Category Info',
+				getFormErrors(this.categoryModel(), this.categoryForm),
+			);
 			return;
 		}
 

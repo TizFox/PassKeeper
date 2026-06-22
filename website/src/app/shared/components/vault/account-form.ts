@@ -7,6 +7,8 @@ import { SupabaseService } from '$/core/supabase.service';
 import { ToastService } from '$/core/toast.service';
 import { FormType, Account, Category, DEFAULT_CATEGORY } from '$/core/types';
 
+import { getFormErrors } from '$/shared/utils/form-errors';
+
 import { DashToTitlePipe } from '$/shared/pipes/dash-to-title.pipe';
 import { Container } from '$/shared/components/base/container';
 import { TextInput } from '$/shared/components/inputs/text-input';
@@ -101,12 +103,6 @@ export class AccountForm {
 		required(schema.name, { message: 'Missing Account Name' });
 		email(schema.email, { message: 'Invalid Email' });
 	});
-	private accountFormErrors = computed<string>(() =>
-		Object.keys(this.accountModel())
-			.flatMap((field) => (this.accountForm as any)[field]().errors())
-			.map((err) => err.message)
-			.join(', '),
-	);
 
 	protected readonly currentAccount = computed<Account>(() => {
 		const categoryId = [DEFAULT_CATEGORY, ...Object.values(this.supabase.categories())].find(
@@ -132,7 +128,10 @@ export class AccountForm {
 
 		this.accountForm().markAsTouched();
 		if (this.accountForm().invalid()) {
-			this.toast.warning('Invalid Account Info', this.accountFormErrors());
+			this.toast.warning(
+				'Invalid Account Info',
+				getFormErrors(this.accountModel(), this.accountForm),
+			);
 			return;
 		}
 
@@ -156,6 +155,15 @@ export class AccountForm {
 			crypto.getRandomValues(arr);
 			return arr[0] % max;
 		}
+		function shuffle(password: string): string {
+			// Fisher-Yates
+			const letters = password.split('');
+			for (let i = letters.length - 1; i > 0; i--) {
+				const j = safeRandom(i + 1);
+				[letters[i], letters[j]] = [letters[j], letters[i]];
+			}
+			return letters.join('');
+		}
 
 		const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 		const NUMBERS = '0123456789';
@@ -163,13 +171,12 @@ export class AccountForm {
 
 		const nLetters = 7;
 		const nNumbers = 5;
-		const nSymbols = 3;
-
+		const nSymbols = 4;
 		let newPassword = '';
 
 		for (let i = 0; i < nLetters; i++) {
 			const letter = LETTERS[safeRandom(LETTERS.length)];
-			newPassword += Math.random() > 0.7 ? letter.toUpperCase() : letter;
+			newPassword += safeRandom(10) > 6 ? letter.toUpperCase() : letter;
 		}
 		for (let i = 0; i < nNumbers; i++) {
 			newPassword += NUMBERS[safeRandom(NUMBERS.length)];
@@ -178,12 +185,7 @@ export class AccountForm {
 			newPassword += SYMBOLS[safeRandom(SYMBOLS.length)];
 		}
 
-		newPassword = newPassword
-			.split('')
-			.map((value) => ({ value, sort: Math.random() }))
-			.sort((a, b) => a.sort - b.sort)
-			.map(({ value }) => value)
-			.join('');
+		newPassword = shuffle(newPassword);
 
 		this.accountModel.update((old) => ({ ...old, password: newPassword }));
 	};

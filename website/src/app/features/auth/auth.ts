@@ -5,6 +5,8 @@ import { FormRoot, form, required, email, minLength } from '@angular/forms/signa
 import { SupabaseService, MIN_PASSWORD_LENGTH } from '$/core/supabase.service';
 import { ToastService } from '$/core/toast.service';
 
+import { getFormErrors } from '$/shared/utils/form-errors';
+
 import { Loading } from '$/shared/components/status/loading';
 
 import { Container } from '$/shared/components/base/container';
@@ -62,12 +64,6 @@ export class AuthPage {
 		required(schema.password, { message: 'Missing Password' });
 		minLength(schema.password, MIN_PASSWORD_LENGTH, { message: 'Invalid Password' });
 	});
-	private loginFormErrors = computed<string>(() =>
-		Object.keys(this.loginModel())
-			.flatMap((field) => (this.loginForm as any)[field]().errors())
-			.map((err) => err.message)
-			.join(', '),
-	);
 
 	private signupModel = signal<SignupData>({ username: '', email: '', password: '' });
 	protected signupForm = form(this.signupModel, (schema) => {
@@ -77,12 +73,6 @@ export class AuthPage {
 		required(schema.password, { message: 'Missing Password' });
 		minLength(schema.password, MIN_PASSWORD_LENGTH, { message: 'Invalid Password' });
 	});
-	private signupFormErrors = computed<string>(() =>
-		Object.keys(this.signupModel())
-			.flatMap((field) => (this.signupForm as any)[field]().errors())
-			.map((err) => err.message)
-			.join(', '),
-	);
 
 	protected handler = async (e: Event, type: AuthActions): Promise<void> => {
 		e.preventDefault();
@@ -109,12 +99,10 @@ export class AuthPage {
 	private handleLogin = async (): Promise<boolean> => {
 		this.loginForm().markAsTouched();
 		if (this.loginForm().invalid()) {
-			/*
-			const errors = [...this.loginForm.email().errors(), ...this.loginForm.email().errors()]
-				.map((err) => err.message)
-				.join(', ');
-			*/
-			this.toast.warning('Invalid Login Info', this.loginFormErrors());
+			this.toast.warning(
+				'Invalid Login Info',
+				getFormErrors(this.loginModel(), this.loginForm),
+			);
 			return false;
 		}
 
@@ -131,8 +119,10 @@ export class AuthPage {
 	private handleSignup = async (): Promise<boolean> => {
 		this.signupForm().markAsTouched();
 		if (this.signupForm().invalid()) {
-			console.log(this.signupForm().errors());
-			this.toast.warning('Invalid Signup Info', this.signupFormErrors());
+			this.toast.warning(
+				'Invalid Signup Info',
+				getFormErrors(this.signupModel(), this.signupForm),
+			);
 			return false;
 		}
 

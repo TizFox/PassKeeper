@@ -5,6 +5,8 @@ import { LucideX } from '@lucide/angular';
 
 import { ToastService } from '$/core/toast.service';
 
+import { getFormErrors } from '$/shared/utils/form-errors';
+
 import { Container } from '$/shared/components/base/container';
 import { Button } from '$/shared/components/inputs/button';
 import { TextInput } from '$/shared/components/inputs/text-input';
@@ -52,11 +54,7 @@ export class Confirm {
 			} else {
 				this.toast.warning(
 					'Invalid Confirm Info',
-					this.checkForm
-						.text()
-						.errors()
-						.map((err) => err.message)
-						.join(', '),
+					getFormErrors(this.checkModel(), this.checkForm),
 				);
 			}
 			return;
