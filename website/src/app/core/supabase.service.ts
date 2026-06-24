@@ -299,7 +299,7 @@ export class SupabaseService {
 			.eq('id', cat.id)
 			.eq('user_id', this._user()?.id!);
 		if (error) {
-			this.toast.error("Can't modify the Account", error.message);
+			this.toast.error("Can't modify the Category", error.message);
 			console.log(error.message);
 			return;
 		}

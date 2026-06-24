@@ -107,7 +107,7 @@ export class ProfilePage {
 			console.log(err);
 			return;
 		}
-		this.toast.info('Account deleated successfully');
+		this.toast.info('Account deleted successfully');
 		window.location.href = '/';
 	};
 }
