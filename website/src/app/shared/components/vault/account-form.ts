@@ -62,11 +62,7 @@ export class AccountForm {
 	modify = output<void>();
 	delete = output<string>();
 	close = output<void>();
-
 	accountId = input<string | null>(null);
-	private account = computed<Account | undefined>(
-		() => this.supabase.accounts()[this.accountId() ?? ''],
-	);
 
 	protected possibleCategories = computed<string[]>(() => [
 		DEFAULT_CATEGORY.name,
@@ -74,19 +70,18 @@ export class AccountForm {
 	]);
 
 	private accountModel = linkedSignal<AccountData>(() => {
-		if (
-			this.account() &&
-			(this.type() === 'view-account' || this.type() === 'modify-account')
-		) {
+		const inputAccount: Account | undefined = this.supabase.accounts()[this.accountId() ?? ''];
+
+		if (inputAccount && (this.type() === 'view-account' || this.type() === 'modify-account')) {
 			// Set Form Values to input Account
 			return {
-				name: this.account()?.name,
-				username: this.account()?.username ?? '',
-				email: this.account()?.email ?? '',
-				password: this.account()?.password ?? '',
-				notes: this.account()?.notes ?? '',
+				name: inputAccount.name,
+				username: inputAccount.username ?? '',
+				email: inputAccount.email ?? '',
+				password: inputAccount.password ?? '',
+				notes: inputAccount.notes ?? '',
 				categoryName:
-					this.supabase.categories()[this.account()?.category_id ?? '']?.name ??
+					this.supabase.categories()[inputAccount.category_id ?? '']?.name ??
 					DEFAULT_CATEGORY.name,
 			} as AccountData;
 		}

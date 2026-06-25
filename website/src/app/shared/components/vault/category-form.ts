@@ -1,11 +1,17 @@
 import { Component, inject, input, output, signal, computed, linkedSignal } from '@angular/core';
-import { FormRoot, form, required } from '@angular/forms/signals';
+import { FormRoot, form, required, validate } from '@angular/forms/signals';
 
 import { LucidePencil, LucideTrash2, LucideX } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { ToastService } from '$/core/toast.service';
-import { ICONS_NAMES, FormType, Category, DEFAULT_CATEGORY } from '$/core/types';
+import {
+	ICONS_NAMES,
+	FormType,
+	Category,
+	JOLLY_CATEGORY_NAME,
+	DEFAULT_CATEGORY,
+} from '$/core/types';
 
 import { getFormErrors } from '$/shared/utils/form-errors';
 
@@ -57,23 +63,23 @@ export class CategoryForm {
 	modify = output<void>();
 	delete = output<string>();
 	close = output<void>();
-
 	categoryId = input<string | null>(null);
-	private category = computed<Category | undefined>(
-		() => this.supabase.categories()[this.categoryId() ?? ''] ?? DEFAULT_CATEGORY,
-	);
+
 	protected possibleIcons = ICONS_NAMES;
 
 	private categoryModel = linkedSignal<CategoryData>(() => {
+		const inputCategory: Category | undefined =
+			this.supabase.categories()[this.categoryId() ?? ''];
+
 		if (
-			this.category() &&
+			inputCategory &&
 			(this.type() === 'view-category' || this.type() === 'modify-category')
 		) {
 			// Set Form Values to input Category
 			return {
-				name: this.category()?.name,
-				icon: this.category()?.icon,
-				color: this.category()?.color,
+				name: inputCategory.name,
+				icon: inputCategory.icon,
+				color: inputCategory.color,
 			} as CategoryData;
 		}
 
@@ -85,6 +91,26 @@ export class CategoryForm {
 	});
 	protected categoryForm = form(this.categoryModel, (schema) => {
 		required(schema.name, { message: 'Missing Category Name' });
+		validate(schema.name, ({ value }) => {
+			const categoryNameBlacklist = (name: string) => {
+				// All the invali category names:
+				switch (name.toLowerCase()) {
+					case JOLLY_CATEGORY_NAME.toLowerCase():
+					case DEFAULT_CATEGORY.name.toLowerCase():
+						return true;
+					default:
+						return false;
+				}
+			};
+
+			if (categoryNameBlacklist(value())) {
+				return {
+					kind: 'blacklist',
+					message: "A Category can't be named 'All' or 'Default'.",
+				};
+			}
+			return null;
+		});
 	});
 
 	protected readonly currentCategory = computed<Category>(() => {

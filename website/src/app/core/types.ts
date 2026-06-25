@@ -88,6 +88,7 @@ export type Category = {
 	color: string;
 };
 
+export const JOLLY_CATEGORY_NAME = 'All';
 export const DEFAULT_CATEGORY: Category = {
 	id: '',
 	name: 'Default',

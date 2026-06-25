@@ -6,13 +6,16 @@ import {
 	SupabaseClient,
 	createClient,
 	User,
-	AuthChangeEvent,
 	Session,
+	AuthChangeEvent,
+	PostgrestError,
+	UserResponse,
+	AuthResponse,
 } from '@supabase/supabase-js';
 
 import { env } from '$/core/env';
 import { MasterService } from '$/core/master.service';
-import { ToastService } from './toast.service';
+import { ToastService } from '$/core/toast.service';
 import { Profile, SupabaseAccount, Account, Category } from '$/core/types';
 
 export const MIN_PASSWORD_LENGTH = 6;
@@ -51,7 +54,7 @@ export class SupabaseService {
 		this.supabase.auth.onAuthStateChange(
 			async (event: AuthChangeEvent, session: Session | null) => {
 				if (event === 'INITIAL_SESSION') {
-					const { data, error } = await this.supabase.auth.getUser();
+					const { data, error }: UserResponse = await this.supabase.auth.getUser();
 					this._user.set(error ? null : data.user);
 					this.loading.set(false);
 				} else if (!session || event === 'SIGNED_OUT') {
@@ -71,23 +74,26 @@ export class SupabaseService {
 		failure?: () => unknown;
 		loadAll?: boolean;
 	}) => {
+		let executed = false;
+
 		const check = effect(async () => {
-			if (!this.loading()) {
+			if (!this.loading() && !executed) {
+				executed = true;
+				check.destroy();
+
 				if (!this._user()) {
 					await failure();
 				} else {
 					this.loading.set(true);
 					await this.loadProfile();
 					if (loadAll) {
-						await this.loadAccounts();
-						await this.loadCategories();
+						await Promise.all([this.loadAccounts(), this.loadCategories()]);
 					}
 					if (success) {
 						success();
 					}
 					this.loading.set(false);
 				}
-				check.destroy();
 			}
 		});
 	};
@@ -111,23 +117,26 @@ export class SupabaseService {
 	readonly categoriesIds = computed<string[]>(() => this._categories().map((cat) => cat.id));
 
 	login = async (email: string, password: string): Promise<string | null> => {
-		const { error } = await this.supabase.auth.signInWithPassword({ email, password });
+		const { data, error }: UserResponse = await this.supabase.auth.signInWithPassword({
+			email,
+			password,
+		});
 
 		if (!error) {
-			this.master.setPassword(password, this._user()?.id!);
+			this.master.setPassword(password, data.user.id);
 		}
 
 		return error?.message ?? null;
 	};
 	signup = async (username: string, email: string, password: string): Promise<string | null> => {
-		const { error } = await this.supabase.auth.signUp({
+		const { data, error }: AuthResponse = await this.supabase.auth.signUp({
 			email,
 			password,
 			options: { data: { username } },
 		});
 
-		if (!error) {
-			this.master.setPassword(password, this._user()?.id!);
+		if (!error && data.user) {
+			this.master.setPassword(password, data.user.id);
 		}
 
 		return error?.message ?? null;
@@ -157,6 +166,11 @@ export class SupabaseService {
 			if (error) {
 				return error.message;
 			}
+
+			// Change password & update SupabaseAccount
+			this.master.setPassword(newPassword, this._user()?.id!);
+			await Promise.all(this._accounts().map((acc) => this.modAccount(acc)));
+			// Se uno fallisce viene "perso", come fare???
 		}
 
 		return null;
@@ -181,11 +195,11 @@ export class SupabaseService {
 			error,
 		}: {
 			data: SupabaseAccount[] | null;
-			error: any;
+			error: PostgrestError | null;
 		} = await this.supabase.from('accounts').select('*');
 		if (error || !data) {
-			this.toast.error("Can't get your Accounts", error.message);
-			console.log(error.message);
+			this.toast.error("Can't get your Accounts", error?.message);
+			console.log(error?.message);
 			return [];
 		}
 
@@ -196,12 +210,11 @@ export class SupabaseService {
 		return accounts;
 	};
 	private getCategories = async (): Promise<Category[]> => {
-		const { data, error }: { data: Category[] | null; error: any } = await this.supabase
-			.from('categories')
-			.select('*');
+		const { data, error }: { data: Category[] | null; error: PostgrestError | null } =
+			await this.supabase.from('categories').select('*');
 		if (error || !data) {
-			this.toast.error("Can't get your Categories", error.message);
-			console.log(error.message);
+			this.toast.error("Can't get your Categories", error?.message);
+			console.log(error?.message);
 			return [];
 		}
 
@@ -225,17 +238,18 @@ export class SupabaseService {
 	newAccount = async (acc: Account) => {
 		const { id, ...insertAcc } = await this.master.accountToSupabase(acc);
 
-		const { data, error } = await this.supabase
-			.from('accounts')
-			.insert({
-				user_id: this._user()?.id!,
-				...insertAcc,
-			})
-			.select()
-			.single();
-		if (error) {
-			this.toast.error("Can't create the new Account", error.message);
-			console.log(error.message);
+		const { data, error }: { data: Account | null; error: PostgrestError | null } =
+			await this.supabase
+				.from('accounts')
+				.insert({
+					user_id: this._user()?.id!,
+					...insertAcc,
+				})
+				.select()
+				.single();
+		if (error || !data) {
+			this.toast.error("Can't create the new Account", error?.message);
+			console.log(error?.message);
 			return;
 		}
 
@@ -245,7 +259,7 @@ export class SupabaseService {
 	modAccount = async (acc: Account) => {
 		const updateAcc = await this.master.accountToSupabase(acc);
 
-		const { error } = await this.supabase
+		const { error }: { error: PostgrestError | null } = await this.supabase
 			.from('accounts')
 			.update(updateAcc)
 			.eq('id', updateAcc.id)
@@ -259,7 +273,7 @@ export class SupabaseService {
 		this._accounts.update((old) => old.map((oldAcc) => (acc.id === oldAcc.id ? acc : oldAcc)));
 	};
 	delAccount = async (accId: string) => {
-		const { error } = await this.supabase
+		const { error }: { error: PostgrestError | null } = await this.supabase
 			.from('accounts')
 			.delete()
 			.eq('id', accId)
@@ -275,17 +289,18 @@ export class SupabaseService {
 
 	newCategory = async (cat: Category) => {
 		const { id, ...insertCat } = cat;
-		const { data, error } = await this.supabase
-			.from('categories')
-			.insert({
-				user_id: this._user()?.id!,
-				...insertCat,
-			})
-			.select()
-			.single();
-		if (error) {
-			this.toast.error("Can't create the new Category", error.message);
-			console.log(error.message);
+		const { data, error }: { data: Account | null; error: PostgrestError | null } =
+			await this.supabase
+				.from('categories')
+				.insert({
+					user_id: this._user()?.id!,
+					...insertCat,
+				})
+				.select()
+				.single();
+		if (error || !data) {
+			this.toast.error("Can't create the new Category", error?.message);
+			console.log(error?.message);
 			return;
 		}
 
@@ -293,7 +308,7 @@ export class SupabaseService {
 		this._categories.update((old) => [...old, cat]);
 	};
 	modCategory = async (cat: Category) => {
-		const { error } = await this.supabase
+		const { error }: { error: PostgrestError | null } = await this.supabase
 			.from('categories')
 			.update(cat)
 			.eq('id', cat.id)
@@ -309,7 +324,7 @@ export class SupabaseService {
 		);
 	};
 	delCategory = async (catId: string) => {
-		const { error } = await this.supabase
+		const { error }: { error: PostgrestError | null } = await this.supabase
 			.from('categories')
 			.delete()
 			.eq('id', catId)

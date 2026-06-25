@@ -8,9 +8,10 @@
 		border-y-2 border-t-transparent border-b-mid
 		base-rounded
 		color-transition
-		focus:border-b-cta">
-		@for (opt of optionList(); track opt) {
-			<option [value]="opt" [selected]="opt === field().value()">{{ opt | dashToTitle }}</option>
+		focus:border-b-cta"
+	>
+		@for (opt of optionList(); track opt; let i = $index) {
+			<option [value]="opt" [selected]="opt === field().value()">{{ getLabel(i) }}</option>
 		}
 	</select>
 </div>

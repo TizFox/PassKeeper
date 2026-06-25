@@ -4,7 +4,7 @@ import { FormRoot, form } from '@angular/forms/signals';
 import { LucidePlus } from '@lucide/angular';
 
 import { SupabaseService } from '$/core/supabase.service';
-import { FormType, Account, Category, DEFAULT_CATEGORY } from '$/core/types';
+import { FormType, Account, Category, JOLLY_CATEGORY_NAME, DEFAULT_CATEGORY } from '$/core/types';
 
 import { Loading } from '$/shared/components/status/loading';
 import { Empty } from '$/shared/components/status/empty';
@@ -17,8 +17,6 @@ import { AccountRecord } from '$/shared/components/vault/account-record';
 import { CategoryRecord } from '$/shared/components/vault/category-record';
 import { AccountForm } from '$/shared/components/vault/account-form';
 import { CategoryForm } from '$/shared/components/vault/category-form';
-
-const JOLLY_CATEGORY_NAME = 'all';
 
 interface SearchData {
 	search: string;
@@ -56,18 +54,19 @@ export class VaultPage {
 	protected possibleCategories = computed<string[]>(() => [
 		JOLLY_CATEGORY_NAME,
 		DEFAULT_CATEGORY.name,
-		...Object.values(this.supabase.categories()).map((cat: Category) => cat.name),
+		...Object.values(this.categoriesMap()).map((cat: Category) => cat.name),
 	]);
+
 	private searchModel = signal<SearchData>({ search: '', categoryName: JOLLY_CATEGORY_NAME });
 	protected searchForm = form(this.searchModel);
 	protected filteredAccountsIds = computed<string[]>(() =>
-		this.supabase.accountsIds().filter((id) => {
-			const account = this.supabase.accounts()[id];
-			const category = this.supabase.categories()[account.category_id] ?? DEFAULT_CATEGORY;
+		this.accountsIds().filter((id) => {
+			const account = this.accountsMap()[id];
+			const category = this.categoriesMap()[account.category_id] ?? DEFAULT_CATEGORY;
 
 			const filteredCategory = [
 				DEFAULT_CATEGORY,
-				...Object.values(this.supabase.categories()),
+				...Object.values(this.categoriesMap()),
 			].find((cat) => cat.name === this.searchModel().categoryName);
 
 			return (

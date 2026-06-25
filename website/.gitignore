@@ -3,6 +3,9 @@
 _TODO.txt
 PassKeeperZIP.zip
 
+/node_modules
+/src/environments
+
 # Compiled output
 /dist
 /tmp
@@ -10,7 +13,6 @@ PassKeeperZIP.zip
 /bazel-out
 
 # Node
-/node_modules
 npm-debug.log
 yarn-error.log
 
