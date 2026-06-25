@@ -2,7 +2,7 @@
 
 @theme {
 	--bar-size: 10vh;
-	--main-size: 80vh;
+	--min-main-size: 80vh;
 
 	--avatar-size: 7vh;
 
@@ -56,6 +56,13 @@
 }
 
 @layer base {
+	html {
+		scroll-behavior: smooth;
+
+		scrollbar-width: thin;
+		scrollbar-color: var(--color-mid) var(--color-z2);
+	}
+
 	body {
 		@apply overflow-x-hidden bg-z0
 		base-text text-std;
