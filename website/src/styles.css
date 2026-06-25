@@ -74,6 +74,11 @@
 	select {
 		@apply outline-none focus:ring-0;
 	}
+
+	/* Bitwarden rectangle :( */
+	bit-notification-bar-root {
+		pointer-events: none !important;
+	}
 }
 
 @layer components {
