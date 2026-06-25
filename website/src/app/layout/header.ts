@@ -12,7 +12,6 @@ import { Button } from '$/shared/components/inputs/button';
 @Component({
 	selector: 'app-header',
 	templateUrl: './header.html',
-	styleUrl: './header.css',
 	imports: [Loading, Logo, Avatar, Button],
 })
 export class Header {

@@ -1,10 +1,10 @@
 import { Route, Routes } from '@angular/router';
 
-import { HomePage } from './features/home/home';
-import { AuthPage } from './features/auth/auth';
-import { VaultPage } from './features/vault/vault';
-import { ProfilePage } from './features/profile/profile';
-import { NotFoundPage } from './features/not-found/not-found';
+import { HomePage } from './features/home';
+import { AuthPage } from './features/auth';
+import { VaultPage } from './features/vault';
+import { ProfilePage } from './features/profile';
+import { NotFoundPage } from './features/not-found';
 
 export const routes: Routes = [
 	{ path: '', component: HomePage },

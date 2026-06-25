@@ -1,0 +1,12 @@
+
+<app-header /> <!-- (onProfile)="openSite()" -->
+
+<app-main-layout>
+	@if (view()) {
+		<app-auth-page /> <!-- (onLogin)="view.set('vault')" -->
+	} @else {
+		<app-vault-page />
+	}
+</app-main-layout>
+
+<app-footer />

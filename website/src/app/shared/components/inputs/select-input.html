@@ -9,6 +9,7 @@
 		base-rounded
 		color-transition
 		focus:border-b-cta"
+		autocomplete="off"
 	>
 		@for (opt of optionList(); track opt; let i = $index) {
 			<option [value]="opt" [selected]="opt === field().value()">{{ getLabel(i) }}</option>

@@ -3,9 +3,9 @@ import { RouterOutlet } from '@angular/router';
 
 import { NgxSonnerToaster } from 'ngx-sonner';
 
-import { Header } from '$/layout/header/header';
-import { MainLayout } from '$/layout/main-layout/main-layout';
-import { Footer } from '$/layout/footer/footer';
+import { Header } from '$/layout/header';
+import { MainLayout } from '$/layout/main-layout';
+import { Footer } from '$/layout/footer';
 
 @Component({
 	selector: 'app-root',
