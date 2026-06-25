@@ -13,7 +13,7 @@ import {
 	AuthResponse,
 } from '@supabase/supabase-js';
 
-import { env } from '$/core/env';
+import { environment } from '../../environments/environment';
 import { MasterService } from '$/core/master.service';
 import { ToastService } from '$/core/toast.service';
 import { Profile, SupabaseAccount, Account, Category } from '$/core/types';
@@ -38,7 +38,7 @@ export class SupabaseService {
 	loading = signal<boolean>(true);
 
 	constructor() {
-		this.supabase = createClient(env.supabaseUrl, env.supabaseKey, {
+		this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
 			auth: {
 				// Ask login every time, to set the masterKey
 				// To not save the masterKey in browser storage (not safe)
