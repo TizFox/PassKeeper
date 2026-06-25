@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="currentColor"
+   stroke-width="2"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   class="lucide lucide-lock-icon lucide-lock"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="icon.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="13.843595"
+     inkscape:cx="16.144651"
+     inkscape:cy="24.921273"
+     inkscape:window-width="1030"
+     inkscape:window-height="1171"
+     inkscape:window-x="26"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g4" />
+  <g
+     id="g4"
+     inkscape:label="Lock">
+    <rect
+       width="18"
+       height="11"
+       x="3"
+       y="11"
+       rx="2"
+       ry="2"
+       id="rect3"
+       style="fill:none;fill-opacity:1;stroke:#14b8a6;stroke-opacity:1" />
+    <path
+       d="M7 11V7a5 5 0 0 1 10 0v4"
+       id="path3"
+       style="fill:none;fill-opacity:1;stroke:#14b8a6;stroke-opacity:1"
+       inkscape:label="path1" />
+  </g>
+</svg>
