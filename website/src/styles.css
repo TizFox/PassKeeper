@@ -60,7 +60,7 @@
 
 @layer base {
 	html {
-		scroll-behavior: smooth;
+		@apply scroll-smooth;
 	}
 
 	body {
@@ -90,7 +90,7 @@
 
 @layer components {
 	.bars-container {
-		@apply w-screen h-(--bar-size) bg-z2
+		@apply w-screen h-(--bar-size) bg-z1
 		flex justify-center base-shadow;
 
 		.header {

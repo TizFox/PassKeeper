@@ -63,5 +63,5 @@
 </app-container>
 
 @if (showConfirmDelete()) {
-	<app-confirm title="Delete Category?" [message]="`If you are sure type: 'I want to delete ${currentCategory().name} Category'`" [checkText]="`I want to delete ${currentCategory().name} Category`" (close)="closeConfirmDelete($event)" />
+	<app-confirm title="Delete Category?" [message]="`If you are sure type: 'I want to delete ${currentCategory().name} Category'.`" [checkText]="`I want to delete ${currentCategory().name} Category`" (close)="closeConfirmDelete($event)" />
 }

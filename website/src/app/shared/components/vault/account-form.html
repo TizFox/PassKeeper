@@ -80,5 +80,5 @@
 </app-container>
 
 @if (showConfirmDelete()) {
-	<app-confirm title="Delete Account?" [message]="`If you are sure type: 'I want to delete ${currentAccount().name} Account'`" [checkText]="`I want to delete ${currentAccount().name} Account`" (close)="closeConfirmDelete($event)" />
+	<app-confirm title="Delete Account?" [message]="`If you are sure type: 'I want to delete ${currentAccount().name} Account'.`" [checkText]="`I want to delete ${currentAccount().name} Account`" (close)="closeConfirmDelete($event)" />
 }
