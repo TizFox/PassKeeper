@@ -2,9 +2,9 @@
 	<app-loading msg="Finding your Accounts..." />
 } @else {
 	<div class="w-full h-full grid grid-cols-7 gap-10">
-		<section class="col-span-5 flex flex-col gap-3">
+		<section class="col-span-5 min-h-0 h-full flex flex-col gap-3">
 			@if (accountsIds().length > 0) {
-				<div class="pl-1 flex justify-between">
+				<div class="flex justify-between">
 					<h1 class="pl-2 border-l-3 border-cta base-rounded">Accounts</h1>
 					<app-button (onClick)="newAccountForm()" p="p-1">
 						<svg lucidePlus class="w-6 h-6" strokeWidth="3"></svg>
@@ -13,21 +13,25 @@
 
 				<form
 					[formRoot]="searchForm"
-					class="w-full p-3 bg-z1 container-rounded base-shadow flex gap-3
-					border-2 border-cta/30"
+					class="w-full p-3 bg-z0 container-rounded inner-shadow flex gap-3"
 				>
 					<app-text-input type="search" placeholder="Search" extra="flex-2" [field]="searchForm.search()" />
 					<app-select-input [optionList]="possibleCategories()" extra="flex-1" [field]="searchForm.categoryName()" />
 				</form>
 
-				@for (accId of filteredAccountsIds(); track accId) {
-					<app-account-record
-						[account]="accountsMap()[accId]"
-						(onClick)="viewAccountForm(accId)"
-					/>
-				} @empty {
-					<app-empty msg="No Accounts Found" />
-				}
+				<div class="scrollable-wrapper">
+					<div class="scrollable-div">
+						@for (accId of filteredAccountsIds(); track accId) {
+							<app-account-record
+								[account]="accountsMap()[accId]"
+								(onClick)="viewAccountForm(accId)"
+							/>
+						} @empty {
+							<app-empty msg="No Accounts Found" noBorder />
+						}
+					</div>
+					<div class="scrollable-shadow"></div>
+				</div>
 			} @else {
 				<app-empty msg="No Accounts">
 					<app-button (onClick)="newAccountForm()">
@@ -37,7 +41,7 @@
 			}
 		</section>
 
-		<section class="col-span-2 flex flex-col gap-3">
+		<section class="col-span-2 min-h-0 h-full flex flex-col gap-3">
 			@if (categoriesIds().length > 0) {
 				<div class="flex justify-between">
 					<h1 class="pl-2 border-l-3 border-cta base-rounded">Categories</h1>
@@ -46,12 +50,17 @@
 					</app-button>
 				</div>
 
-				@for (catId of categoriesIds(); track catId) {
-					<app-category-record
-						[category]="categoriesMap()[catId]"
-						(onClick)="viewCategoryForm(catId)"
-					/>
-				}
+				<div class="scrollable-wrapper">
+					<div class="scrollable-div">
+						@for (catId of categoriesIds(); track catId) {
+							<app-category-record
+								[category]="categoriesMap()[catId]"
+								(onClick)="viewCategoryForm(catId)"
+							/>
+						}
+					</div>
+					<div class="scrollable-shadow"></div>
+				</div>
 			} @else {
 				<app-empty msg="No Categories">
 					<app-button (onClick)="newCategoryForm()">

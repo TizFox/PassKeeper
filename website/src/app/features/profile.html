@@ -2,8 +2,8 @@
 	<app-loading msg="Checking your Account..." />
 } @else {
 	<app-container extra="w-min mx-auto gap-5">
-		<div class="w-full flex gap-3">
-			<app-avatar />
+		<div class="w-full flex items-center gap-3">
+			<app-avatar noHover />
 			<div class="flex flex-col">
 				<h2 class="font-semibold text-cta">{{ profile().username }}</h2>
 				<span>{{ profile().email }} </span>

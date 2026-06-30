@@ -1,4 +1,5 @@
 import { Component, inject, computed } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { SupabaseService } from '$/core/supabase.service';
 import { User } from '@supabase/supabase-js';
@@ -12,7 +13,7 @@ import { Button } from '$/shared/components/inputs/button';
 @Component({
 	selector: 'app-header',
 	templateUrl: './header.html',
-	imports: [Loading, Logo, Avatar, Button],
+	imports: [RouterLink, Loading, Logo, Avatar, Button],
 })
 export class Header {
 	private supabase: SupabaseService = inject(SupabaseService);

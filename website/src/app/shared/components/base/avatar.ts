@@ -1,5 +1,4 @@
-import { Component, inject, input, computed } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, input, booleanAttribute, computed } from '@angular/core';
 
 import { SupabaseService } from '$/core/supabase.service';
 
@@ -11,12 +10,12 @@ import { SupabaseService } from '$/core/supabase.service';
 			display: contents;
 		}
 	`,
-	imports: [RouterLink],
 })
 export class Avatar {
 	private supabase: SupabaseService = inject(SupabaseService);
 
 	size = input<string>('w-(--avatar-size)');
+	noHover = input(false, { transform: booleanAttribute });
 
 	protected initials = computed<string>(() =>
 		this.supabase

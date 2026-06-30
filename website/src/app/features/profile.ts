@@ -108,6 +108,6 @@ export class ProfilePage {
 			return;
 		}
 		this.toast.info('Account deleted successfully');
-		window.location.href = '/';
+		window.location.href = '/'; // Reloads the page
 	};
 }

@@ -1,12 +1,9 @@
-<a routerLink="/profile">
-	<div
-		class="w-(--avatar-size) aspect-square
-		flex justify-center items-center
-		bg-z1 rounded-full overflow-hiden base-shadow
-		border-3 border-mid text-mid
-		color-transition
-		hover:border-cta hover:text-cta"
-	>
-		<h1 class="font-semibold">{{ initials() }}</h1>
-	</div>
-</a>
+<div
+	[class]="'w-(--avatar-size) aspect-square
+	flex justify-center items-center
+	bg-z1 rounded-full overflow-hiden base-shadow
+	border-3 border-mid text-mid ' +
+	(noHover() ? '' : 'color-transition hover:border-cta')"
+>
+	<h1 class="font-semibold">{{ initials() }}</h1>
+</div>
